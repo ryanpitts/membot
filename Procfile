@@ -1,1 +1,1 @@
-web: gunicorn config.base.wsgi --log-file -
+web: gunicorn membot.config.base.wsgi --log-file -

@@ -10,8 +10,9 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+#import dj_database_url
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -23,16 +24,17 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
-ROOT_URLCONF = 'config.base.urls'
-WSGI_APPLICATION = 'config.base.wsgi.application'
+ROOT_URLCONF = 'membot.config.base.urls'
+WSGI_APPLICATION = 'membot.config.base.wsgi.application'
 
 INSTALLED_APPS = (
     #'django.contrib.admin',
     #'django.contrib.auth',
-    'django.contrib.contenttypes',
+    #'django.contrib.contenttypes',
     #'django.contrib.sessions',
     #'django.contrib.messages',
     'django.contrib.staticfiles',
+    'membot',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,12 +64,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-#DATABASES = {
+DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'NAME': os.path.join(BASE_DIR, 'defaultdb'),
 #    }
-#}
+}
+#DATABASES['default'] = dj_database_url.config()
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
