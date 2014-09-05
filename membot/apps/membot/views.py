@@ -18,6 +18,10 @@ class CommandView(View):
             return HttpResponseForbidden
         else:
             print received.token
+        
+        # make sure command is coming from the right place
+        if received.token != SLACK_TOKEN or received.team_id != SLACK_TEAM_ID:
+            return HttpResponseForbidden
 
         response = {
             'text': 'Membot is here, <@%s>! I heard you say \'%s\'' % (received.user_name, received.text)
