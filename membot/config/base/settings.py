@@ -23,7 +23,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 DEBUG = True
 TEMPLATE_DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [*]
 ROOT_URLCONF = 'membot.config.base.urls'
 WSGI_APPLICATION = 'membot.config.base.wsgi.application'
 
