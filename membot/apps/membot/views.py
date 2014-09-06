@@ -25,7 +25,7 @@ class CommandView(View):
             return HttpResponseForbidden
         
         response = {
-            'text': 'Membot is here, <@%s>! I heard you say %s' % (user_name, text)
+            'text': 'Hello <@%s>, Membot is here! I heard you say %s' % (user_name, text)
         }
 
         return JsonResponse(response)
