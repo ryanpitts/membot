@@ -11,20 +11,16 @@ def homepage(request):
 class CommandView(View):
     def post(self, request, *args, **kwargs):
         received = request.POST
-        print received
+        token = received.get('token', None)
+        user_name = received.get('user_name', None)
+        text = received.get('text', None)
         
         # make sure command is coming from the right place
-        if received.token != SLACK_TOKEN:
+        if token != SLACK_TOKEN:
             return HttpResponseForbidden
-        else:
-            print received.token
         
-        # make sure command is coming from the right place
-        if received.token != SLACK_TOKEN or received.team_id != SLACK_TEAM_ID:
-            return HttpResponseForbidden
-
         response = {
-            'text': 'Membot is here, <@%s>! I heard you say \'%s\'' % (received.user_name, received.text)
+            'text': 'Membot is here, <@%s>! I heard you say \'%s\'' % (user_name, text)
         }
 
         return JsonResponse(response)
