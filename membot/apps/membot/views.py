@@ -21,11 +21,11 @@ class CommandView(View):
         text = received.get('text', None)
         
         # make sure command is coming from the right place
-        #if token != SLACK_TOKEN:
-        #    return HttpResponseForbidden
+        if token != SLACK_TOKEN:
+            return HttpResponseForbidden
         
         response = {
-            'text': 'Membot is here, <@%s>! I heard you say \'%s\' with token \'%s\', expecting token \'%s\'' % (user_name, text, token, SLACK_TOKEN)
+            'text': 'Membot is here, <@%s>! I heard you say \'%s\'' % (user_name, text)
         }
 
         return JsonResponse(response)
