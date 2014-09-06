@@ -9,8 +9,11 @@ SLACK_TOKEN = os.environ['SLACK_TOKEN']
 def homepage(request):
     return HttpResponse('Hello world this is membot')    
 
-@csrf_exempt
 class CommandView(View):
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(CommandView, self).dispatch(*args, **kwargs)
+        
     def post(self, request, *args, **kwargs):
         received = request.POST
         token = received.get('token', None)
