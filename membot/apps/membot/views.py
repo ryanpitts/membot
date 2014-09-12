@@ -66,7 +66,7 @@ class CommandView(View):
             del tokens[0]
 
         # just in case we had punctuation after the trigger name
-        if tokens[0].lower() in [',', ':', '!']:
+        if tokens[0].lower() in [',', ':', '!', '?']:
             del tokens[0]
 
         # collect the hashtags
