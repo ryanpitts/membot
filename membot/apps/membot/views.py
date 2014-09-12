@@ -68,7 +68,7 @@ class CommandView(View):
             del tokens[0]
 
         # just in case we had punctuation after the trigger name
-        if tokens[0].lower() in [',', ':', '!', '?']:
+        if tokens and tokens[0].lower() in [',', ':', '!', '?']:
             del tokens[0]
 
         # collect the hashtags
@@ -88,13 +88,14 @@ class CommandView(View):
         }
 
         # see if we have a special command
-        if tokens[0].lower() in ['please', 'plz']:
+        if tokens and tokens[0].lower() in ['please', 'plz']:
             del tokens[0]
 
             # take the next word for our special command
-            command.update({
-                'special': tokens.pop(0),
-            })
+            if tokens:
+                command.update({
+                    'special': tokens.pop(0),
+                })
 
         # finally we have our text
         command.update({
