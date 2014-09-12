@@ -21,11 +21,11 @@ class CommandView(View):
         
     def post(self, request, *args, **kwargs):
         received = request.POST
-        auth_token = received.get('token', None),
+        auth_token = received.get('token', None)
         
         # make sure command is coming from the right place
         if auth_token != SLACK_TOKEN:
-            return HttpResponseForbidden
+            return HttpResponseForbidden()
 
         # collect our command params
         command = self.parse_command(received)
