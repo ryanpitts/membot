@@ -50,10 +50,12 @@ class CommandView(View):
                     memories = Memory.objects.filter(is_active=True, category__in=command['categories']).distinct()
                     
                     if memories:
-                        intro = ['Here\'s what I remember about %s:\n' % ' '.join(command['categories'])]
+                        intro = 'Here\'s what I remember about %s:\n' % ' '.join(command['categories'])
+                        report = []
+
                         for memory in memories:
-                            say = '- On %s, <@%s> said: %s' % (memory.created.strftime('%B %d'), memory.person, memory.text)
-                            report.append(say)
+                            report.append('- On %s, <@%s> said: %s' % (memory.created.strftime('%B %d'), memory.person, memory.text))
+
                         self.set_response(intro + '```' + '\n'.join(report) + '```')
                     else:
                         self.set_response('Sorry, I don\'t remember anything like that!')
