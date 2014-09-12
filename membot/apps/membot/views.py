@@ -49,7 +49,7 @@ class CommandView(View):
 
                     for category in command['categories']:
                         memory_set = Memory.objects.filter(is_active=True, category=category)
-                        memories.append(memory_set)
+                        memories.append(list(memory_set))
                         
                     memories = list(set(memories))
                     
