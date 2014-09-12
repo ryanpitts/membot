@@ -32,13 +32,13 @@ class CommandView(View):
         
         # if we don't actually have a command ...
         if not command['text']:
-            self.set_response('Yes <@%s>?' % (command['user_name']))
+            self.set_response('Yes <@%s>?' % (command['person']))
 
         # otherwise take action
         else:
             # TODO
             if 'special' in command:
-                self.set_response('\'%s\' sounds like a special command, <@%s>, but I haven\'t learned that one yet :(' % (command['special'], command['user_name']))
+                self.set_response('\'%s\' sounds like a special command, <@%s>, but I haven\'t learned that one yet :(' % (command['special'], command['person']))
 
             # we have a memory to log, so do it for each defined category
             else:
@@ -51,7 +51,7 @@ class CommandView(View):
                     memory = Memory(**kwargs)
                     memory.save()
                 
-                self.set_response('Got it, <@%s>!' % (command['user_name']))
+                self.set_response('Got it, <@%s>!' % (command['person']))
 
         return JsonResponse(self.response)
 
