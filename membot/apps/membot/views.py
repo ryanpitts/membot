@@ -62,8 +62,9 @@ class CommandView(View):
         # split the command text for cleaning
         tokens = received.get('text', '').split(' ')
         
-        # we don't need the bot name
-        if tokens[0].lower() == BOT_NAME:
+        # we don't need the bot name, and using `startswith`
+        # catches most natural language punctuation
+        if tokens[0].lower().startswith(BOT_NAME):
             del tokens[0]
 
         # just in case we had punctuation after the trigger name
