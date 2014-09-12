@@ -54,10 +54,10 @@ class CommandView(View):
 
         return JsonResponse(self.response)
 
-    def set_response(text):
+    def set_response(self, text):
         self.response['text'] = text
         
-    def parse_command(received):
+    def parse_command(self, received):
         # split the command text for cleaning
         tokens = received.get('text', '').split(' ')
         
