@@ -43,11 +43,12 @@ class CommandView(View):
             # we have a memory to log, so do it for each defined category
             else:
                 for category in command['categories']:
-                    memory = Memory({
+                    kwargs = {
                         'text': command['text'],
                         'person': command['person'],
                         'category': category,
-                    })
+                    }
+                    memory = Memory(**kwargs)
                     memory.save()
                 
                 self.set_response('Got it, <@%s>!' % (command['user_name']))
