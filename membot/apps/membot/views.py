@@ -56,7 +56,7 @@ class CommandView(View):
                     if memories:
                         intro = ['Here\'s what I remember about %s:\n' % ' '.join(command['categories'])]
                         for memory in memories:
-                            say = '- On %s, <@%s> said: %s' % (memory['created'], memory['person'], memory['text'])
+                            say = '- On %s, <@%s> said: %s' % (memory['created'].strftime('%B %d'), memory['person'], memory['text'])
                             report.append(say)
                         self.set_response(intro + '```' + '\n'.join(report) + '```')
                     else:
