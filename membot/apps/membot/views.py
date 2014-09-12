@@ -47,11 +47,7 @@ class CommandView(View):
                     memories = []
                     #TODO: handle `since` option
 
-                    for category in command['categories']:
-                        memory_set = Memory.objects.filter(is_active=True, category=category)
-                        memories.append(list(memory_set))
-                        
-                    memories = list(set(memories))
+                    memories = Memory.objects.filter(is_active=True, category__in=command['categories']).distinct()
                     
                     if memories:
                         intro = ['Here\'s what I remember about %s:\n' % ' '.join(command['categories'])]
