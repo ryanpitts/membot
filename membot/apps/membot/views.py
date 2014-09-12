@@ -42,7 +42,7 @@ class CommandView(View):
 
             # we have a memory to log, so do it for each defined category
             else:
-                for category in categories:
+                for category in command['categories']:
                     memory = Memory({
                         'text': command['text'],
                         'person': command['person'],
