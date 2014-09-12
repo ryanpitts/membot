@@ -81,7 +81,7 @@ class CommandView(View):
 
         # begin the command dict
         command = {
-            'user_name': received.get('user_name', None),
+            'person': received.get('user_name', None),
             'categories': categories,
         }
 
