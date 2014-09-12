@@ -8,6 +8,7 @@ from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
 BOT_NAME = 'membot'
+KNOWN_COMMANDS = ['show',]
 
 def homepage(request):
     return HttpResponse('Hello world this is membot')    
@@ -36,9 +37,30 @@ class CommandView(View):
 
         # otherwise take action
         else:
-            # TODO
             if 'special' in command:
-                self.set_response('\'%s\' sounds like a special command, <@%s>, but I haven\'t learned that one yet :(' % (command['special'], command['person']))
+                action = command['special']
+
+                if action not in KNOWN_COMMANDS:
+                    self.set_response('\'%s\' sounds like a special command, <@%s>, but I haven\'t learned that one yet :(' % (command['special'], command['person']))
+                
+                if action == 'show':
+                    memories = []
+                    #TODO: handle `since` option
+
+                    for category in command['categories']:
+                        memory_set = Memory.objects.filter(is_active=True, category=category)
+                        memories.append(memory_set)
+                        
+                    memories = list(set(memories))
+                    
+                    if memories:
+                        intro = ['Here\'s what I remember about %s\n' % ' '.join(command['categories'])]
+                        for memory in memories:
+                            say = u'• On %s, <@%s> said: %s' % (memory['created'], memory['person'], memory['text'])
+                            report.append(say)
+                        self.set_response(intro + '```' + '\n'.join(report) + '```')
+                    else:
+                        self.set_response('Sorry, I don\'t remember anything like that!')
 
             # we have a memory to log, so do it for each defined category
             else:
@@ -75,7 +97,7 @@ class CommandView(View):
         categories = []
         for token in tokens:
             if token.startswith('#'):
-                categories.append(token)
+                categories.append(token.lower())
                 
         # give ourselves a default category if nothing else
         if not categories:
