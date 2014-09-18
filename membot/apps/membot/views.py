@@ -1,4 +1,5 @@
 import os
+import string
 
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -88,14 +89,14 @@ class CommandView(View):
             del tokens[0]
 
         # just in case we had punctuation after the trigger name
-        if tokens and tokens[0].lower() in [',', ':', '!', '?']:
+        if tokens and tokens[0].lower() in list(string.punctuation):
             del tokens[0]
 
         # collect the hashtags
         categories = []
         for token in tokens:
             if token.startswith('#'):
-                categories.append(token.lower())
+                categories.append(token.lower().rstrip(string.punctuation))
                 
         # give ourselves a default category if nothing else
         if not categories:
