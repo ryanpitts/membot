@@ -33,7 +33,7 @@ class CommandView(View):
         
         # if we don't actually have a command ...
         if not command['text']:
-            self.set_response('Yes <@%s>?' % (command['person']))
+            self.set_response('Yes <@{0}>?'.format(command['person']))
 
         # otherwise take action
         else:
@@ -41,7 +41,7 @@ class CommandView(View):
                 action = command['special']
 
                 if action not in KNOWN_COMMANDS:
-                    self.set_response('\'%s\' sounds like a special command, <@%s>, but I haven\'t learned that one yet :(' % (command['special'], command['person']))
+                    self.set_response('\'{0}\' sounds like a special command, <@{1}>, but I haven\'t learned that one yet :('.format(command['special'], command['person']))
                 
                 if action == 'show':
                     memories = []
@@ -50,11 +50,11 @@ class CommandView(View):
                     memories = Memory.objects.filter(is_active=True, category__in=command['categories']).distinct()
                     
                     if memories:
-                        intro = 'Here\'s what I remember about %s:\n' % ' '.join(command['categories'])
+                        intro = 'Here\'s what I remember about {0}:\n'.format(' '.join(command['categories']))
                         report = []
 
                         for memory in memories:
-                            report.append('- On %s, <@%s> said: %s' % (memory.created.strftime('%B %d'), memory.person, memory.text))
+                            report.append('- On {0}, <@{1}> said: {2}'.format(memory.created.strftime('%B %d'), memory.person, memory.text))
 
                         self.set_response(intro + '```' + '\n'.join(report) + '```')
                     else:
@@ -71,7 +71,7 @@ class CommandView(View):
                     memory = Memory(**kwargs)
                     memory.save()
                 
-                self.set_response('Got it, <@%s>!' % (command['person']))
+                self.set_response('Got it, <@{0}>!'.format(command['person']))
 
         return JsonResponse(self.response)
 
