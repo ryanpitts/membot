@@ -24,7 +24,7 @@ class MessageView(View):
     def post(self, request, *args, **kwargs):
         received = request.POST
         data = received['message']
-        endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23general'.format(INBOUND_SLACK_TOKEN)
+        endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23testing'.format(INBOUND_SLACK_TOKEN)
         r = requests.post(endpoint, data=data)                    
         
         return JsonResponse({'text': 'message sent'})
