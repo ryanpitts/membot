@@ -9,7 +9,6 @@ from django.views.generic import View
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
-ALLOWED_MESSAGE_HOSTS = os.environ['ALLOWED_MESSAGE_HOSTS']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 BOT_NAME = 'membot'
 KNOWN_COMMANDS = ['show',]
@@ -24,10 +23,6 @@ class MessageView(View):
 
     def post(self, request, *args, **kwargs):
         received = request.POST
-        
-        if request.META['HTTP_HOST'] not in ALLOWED_MESSAGE_HOSTS.split(','):
-            return HttpResponseForbidden()
-
         data = received['message']
         endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23general'.format(INBOUND_SLACK_TOKEN)
         r = requests.post(endpoint, data=data)                    
