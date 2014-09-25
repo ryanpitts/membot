@@ -23,9 +23,16 @@ class MessageView(View):
 
     def post(self, request, *args, **kwargs):
         received = request.POST
-        data = received['message']
+        auth_token = received.get('token', None)
+        
+        # make sure message is coming from an authorized place
+        if auth_token != INBOUND_SLACK_TOKEN:
+            return HttpResponseForbidden()
+        
+        # send the message into Slack
         endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23testing'.format(INBOUND_SLACK_TOKEN)
-        r = requests.post(endpoint, data=data)                    
+        message = received.get('message', '')
+        r = requests.post(endpoint, data=message)                    
         
         return JsonResponse({'text': 'message sent'})
 
