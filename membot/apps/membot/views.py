@@ -30,7 +30,7 @@ class MessageView(View):
             return HttpResponseForbidden()
         
         # send the message into Slack
-        endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23testing'.format(INBOUND_SLACK_TOKEN)
+        endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23general'.format(INBOUND_SLACK_TOKEN)
         message = received.get('message', '')
         r = requests.post(endpoint, data=message)                    
         
