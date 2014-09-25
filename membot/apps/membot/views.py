@@ -1,4 +1,5 @@
 import os
+import requests
 import string
 
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
@@ -8,11 +9,30 @@ from django.views.generic import View
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
+ALLOWED_MESSAGE_HOSTS = os.environ['ALLOWED_MESSAGE_HOSTS']
+INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 BOT_NAME = 'membot'
 KNOWN_COMMANDS = ['show',]
 
 def homepage(request):
     return HttpResponse('Hello world this is membot')    
+
+class MessageView(View):
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(MessageView, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        received = request.POST
+        
+        if request.META['HTTP_HOST'] not in ALLOWED_MESSAGE_HOSTS.split(','):
+            return HttpResponseForbidden()
+
+        data = received['message']
+        endpoint = 'https://opennews.slack.com/services/hooks/slackbot?token={0}&channel=%23general'.format(INBOUND_SLACK_TOKEN)
+        r = requests.post(endpoint, data=data)                    
+        
+        return JsonResponse({'text': 'message sent'})
 
 class CommandView(View):
     response = {'text': ''}
