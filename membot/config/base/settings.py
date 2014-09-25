@@ -35,10 +35,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'membot.apps.membot',
+    'corsheaders',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -60,7 +62,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
 )
 
-
+# CORS
+CORS_ORIGIN_WHITELIST = tuple(os.environ['ALLOWED_MESSAGE_HOSTS'].split(','))
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
