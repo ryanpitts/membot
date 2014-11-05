@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{% block head_title %}OpenNews Memory Bank{% endblock %}</title>
+        <meta name="description" content="{% block head_meta_description %}{% endblock %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block head_css %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/app.css">
+        {% block head_css_extra %}{% endblock %}{% endblock head_css %}
+        {% block head_javascript %}
+        <script src="//cdn.jsdelivr.net/g/modernizr@2.7,respond@1.4"></script>
+        {% block head_javascript_extra %}{% endblock %}{% endblock %}
+        <link rel="shortcut icon" href="{{ STATIC_URL }}img/icons/favicon.ico" />
+        <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/icons/touch-icon-144x144.png" sizes="144x144" />
+    </head>
+    <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+        {% block body %}
+            {% block header %}
+            <header>
+                {% block header_content %}{% endblock header_content %}
+            </header>
+            {% endblock %}
+
+            {% block content_container %}
+            <div class="container clearfix">
+                {% block content %}{% endblock %}
+            </div>
+            {% endblock %}
+            
+            {% block footer %}
+            <footer>
+                {% block footer_content %}{% endblock footer_content %}
+            </footer>
+            {% endblock footer %}
+        {% endblock body %}
+
+        {% block body_javascript %}
+            {% block body_javascript_extra %}{% endblock %}
+        {% endblock body_javascript %}
+    </body>
+</html>

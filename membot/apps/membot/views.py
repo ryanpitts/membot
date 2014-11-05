@@ -13,7 +13,7 @@ INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 BOT_NAME = 'membot'
 KNOWN_COMMANDS = ['show',]
 
-def homepage(request):
+def hello(request):
     return HttpResponse('Hello world this is membot')    
 
 class MessageView(View):

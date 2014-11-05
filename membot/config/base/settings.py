@@ -1,21 +1,7 @@
-"""
-Django settings for membot project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 DEFAULT_SECRET_KEY = 'mj4%3@87asupersecretdefaultkey90sd_$f8907a)*'
@@ -23,7 +9,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
 DEBUG = True
 TEMPLATE_DEBUG = True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] #TODO: change this once we have a domain
 ROOT_URLCONF = 'membot.config.base.urls'
 WSGI_APPLICATION = 'membot.config.base.wsgi.application'
 
@@ -31,10 +17,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'membot.apps.membot',
+    'membot.apps.projects',
     'corsheaders',
 )
 

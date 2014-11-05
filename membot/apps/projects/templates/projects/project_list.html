@@ -1,0 +1,17 @@
+{% extends 'projects/_base.html' %}{% load humanize %}
+
+{% block content %}
+
+    {% for project in projects %}
+    <div class="card">
+        {% if project.next_itemdate %}
+            <span class="next-date">{{ project.next_itemdate.naturaldate }}</span>
+        {% endif %}
+        <h2>{{ project.name }}</h2>
+        {% if project.next_itemdate %}
+            <p><strong>Next:</strong> {{ project.next_itemdate.name }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    
+{% endblock %}
