@@ -1,0 +1,177 @@
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Regular-webfont.eot');
+    src: url('../fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/OpenSans-Regular-webfont.woff') format('woff'),
+         url('../fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
+         url('../fonts/OpenSans-Regular-webfont.svg#OpenSansRegular') format('svg');
+    font-weight: normal;
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Bold-webfont.eot');
+    src: url('../fonts/OpenSans-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/OpenSans-Bold-webfont.woff') format('woff'),
+         url('../fonts/OpenSans-Bold-webfont.ttf') format('truetype'),
+         url('../fonts/OpenSans-Bold-webfont.svg#OpenSansBold') format('svg');
+    font-weight: bold;
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('../fonts/fontawesome-webfont.eot?v=4.1.0');
+  src: url('../fonts/fontawesome-webfont.eot?#iefix&v=4.1.0') format('embedded-opentype'), url('../fonts/fontawesome-webfont.woff?v=4.1.0') format('woff'), url('../fonts/fontawesome-webfont.ttf?v=4.1.0') format('truetype'), url('../fonts/fontawesome-webfont.svg?v=4.1.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fa {
+  display: inline-block;
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-star:before {
+  content: "\f005";
+}
+.fa-plus-circle:before {
+  content: "\f055";
+}
+.fa-minus-circle:before {
+  content: "\f056";
+}
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    color: #111;
+    background-color: PowderBlue;
+    font-size: 16px;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+.container {
+    position: relative;
+    max-width: 1140px;
+    margin: 2em auto;
+}
+
+header h1 {
+    font-weight: bold;
+    font-size: 2.5em;
+    line-height: 1.2em;
+    margin-bottom: .5em;
+}
+header h1 {
+    clear: both;
+    text-align: center;
+}
+
+.page-block {
+    margin: 0 0 2em;
+}
+
+.card {
+    display: block;
+    clear: both;
+    position: relative;
+    cursor: pointer;
+    padding: 1em 2.5em 2.5em 1em;
+    margin: 0 2% 1em 0;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    color: #111;
+    text-decoration: none;
+    background-color: WhiteSmoke;
+}
+
+.card h2,
+.card .next-date {
+    font-size: 1.8em;
+}
+
+.card h2 {
+    margin: 0 0 .5em;
+    
+}
+
+.card p {
+    font-size: .83em;
+    margin: 0;
+    position: absolute;
+    bottom: 1.5em;
+}
+
+.card ul {
+    font-size: .83em;
+}
+
+.card .next-date {
+    float: right;
+}
+
+.ghost {
+    opacity: .4;
+}
+
+.hidden {
+    display: none;
+}
+
+.clearfix:before,
+.clearfix:after,
+.page-block:before,
+.page-block:after {
+    content: " ";
+    display: table;
+}
+.clearfix:after,
+.page-block:after {
+    clear: both;
+}
+.clearfix,
+.page-block {
+    *zoom: 1;
+}
+
+@media only screen and (max-width: 767px) {
+    .container {
+        padding: 0;
+        margin: 2em 1em;
+    }
+    header {
+        margin-left: 0;
+    }
+}
+
+@media only screen and (max-width: 540px) {
+    header h1 {
+        font-size: 2em;
+    }
+    header h1 img {
+        display: block;
+        height: 2.5em;
+        margin: 0 auto .5em;
+    }
+    header p {
+        font-size: .75em;
+    }
+}
+@media only screen and (max-width: 420px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+}
