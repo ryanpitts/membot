@@ -1,4 +1,6 @@
 import os
+import random
+import re
 import requests
 import string
 
@@ -10,8 +12,11 @@ from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
-BOT_NAME = 'membot'
-KNOWN_COMMANDS = ['show',]
+BOT_NAMES = ['membot', 'hey cody']
+KNOWN_COMMANDS = {
+    'membot': ['show',],
+    'hey cody': ['publish proposals'],
+}
 
 def hello(request):
     return HttpResponse('Hello world this is membot')    
@@ -37,7 +42,7 @@ class MessageView(View):
         
         return JsonResponse({'text': 'message sent'})
 
-class CommandView(View):
+class MembotCommandView(View):
     response = {'text': ''}
     
     @csrf_exempt
@@ -64,7 +69,7 @@ class CommandView(View):
             if 'special' in command:
                 action = command['special']
 
-                if action not in KNOWN_COMMANDS:
+                if action not in KNOWN_COMMANDS['membot']:
                     self.set_response('\'{0}\' sounds like a special command, <@{1}>, but I haven\'t learned that one yet :('.format(command['special'], command['person']))
                 
                 if action == 'show':
@@ -108,7 +113,7 @@ class CommandView(View):
         
         # we don't need the bot name, and using `startswith`
         # catches most natural language punctuation
-        if tokens[0].lower().startswith(BOT_NAME):
+        if tokens[0].lower().startswith('membot'):
             del tokens[0]
 
         # just in case we had punctuation after the trigger name
@@ -147,3 +152,89 @@ class CommandView(View):
         })
 
         return command
+
+
+class RevisedCommandView(View):
+    response = {'text': ''}
+    received = ''
+
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(RevisedCommandView, self).dispatch(*args, **kwargs)
+
+    def verify_auth_token(self):
+        # make sure command is coming from the right place
+        self.auth_token = self.received.get('token', None)
+
+        if self.auth_token != SLACK_TOKEN:
+            return HttpResponseForbidden()
+        return True
+
+    def post(self, request, *args, **kwargs):
+        self.received = request.POST
+
+        self.verify_auth_token()
+        self.parse_command()
+        self.parse_command_person()
+
+        # if we don't actually have a command ...
+        if not self.command['text']:
+            self.send_response('Hey <{0}>, what\'s up?'.format(self.command['person']))
+
+        # otherwise take action
+        action = self.command['action']
+        
+        if not action:
+            self.send_response('Hmmm, I\'m not sure how to do that, <{0}>. Here\'s what I\'m authorized to do: {1}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']])))
+
+        if action == 'publish proposals':
+            affirmative = self.random_affirmative(self.command['person'])
+            self.send_response('{0}. I just added the latest data to http://srrcon.org/sessions/proposals.'.format(affirmative)
+
+        # we're only here if everything failed for some reason
+        return JsonResponse({'text': 'Whoa, that\'s weird. Not sure what just happened.'})
+        
+    def send_response(self, text):
+        self.response['text'] = text
+        return JsonResponse(self.response)
+        
+    def random_affirmative(self, person):
+        possibles = ['On it, {0}', 'You got it, {0}', 'BOOM']
+        return random.choice(possibles).format(person)
+
+    def parse_command_person(self):
+        if self.command['person'] == '@ryanpitts' && self.command['botname'] == 'hey cody':
+            self.command['person'] = 'Dad'
+        
+    def parse_command(self):
+        self.raw_command = self.received.get('text', '')
+        self.command = {
+            'person': '@' + self.received.get('user_name', 'channel'),
+            'botname': '',
+            'action': '',
+        }
+
+        # we don't need the bot name, and using `startswith`
+        # catches most natural language punctuation
+        for name in BOT_NAMES:
+            if self.raw_command.lower().startswith(name.lower())
+                self.command['botname'] = name
+                botname = re.compile(name, re.IGNORECASE)
+                self.raw_command = self.raw_command.sub(botname, s, 1)
+
+        # if we have an empty string at this point, bail
+        if not self.raw_command:
+            return
+            
+        # just in case we had punctuation after the trigger name
+        if self.raw_command[0] in list(string.punctuation):
+            self.raw_command = self.raw_command[1:]
+
+        # split the command text into tokens
+        tokens = self.raw_command.strip().split(' ')
+
+        for command in KNOWN_COMMANDS[self.command['botname']]:
+            command_words = command.split(' ')
+            if set(command_words).issubset(set(tokens)):
+                self.command['action'] = command
+                break
