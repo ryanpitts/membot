@@ -202,7 +202,7 @@ class RevisedCommandView(View):
             try:
                 update_proposals()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0}. I just added the latest data to http://srrcon.org/sessions/proposals.'.format(affirmative))
+                self.set_response('{0}. I just added the latest data to http://srccon.org/sessions/proposals.'.format(affirmative))
             except:
                 self.set_response('Crap, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
