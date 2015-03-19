@@ -185,17 +185,17 @@ class RevisedCommandView(View):
 
         # if we don't actually have a command ...
         if not self.command['text']:
-            self.set_response('Hey <{0}>, what\'s up?'.format(self.command['person']))
+            self.set_response('Hey {0}, what\'s up?'.format(self.command['person']))
             return JsonResponse(self.response)
 
         # otherwise take action
         action = self.command['action']
-        
+
         if not action:
             suffix = ''
             if len(KNOWN_COMMANDS[self.command['botname']]) < 2:
                 suffix = ' (Yeah, I don\'t get to do a lot yet.)' 
-            self.set_response('Hmmm, I\'m not sure how to do that, <{0}>. Here\'s what I\'m authorized to do: {1}.{2}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']]), suffix))
+            self.set_response('Hmmm, I\'m not sure how to do that, {0}. Here\'s what I\'m authorized to do: {1}.{2}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']]), suffix))
             return JsonResponse(self.response)
 
         if action == 'publish proposals':
@@ -219,13 +219,13 @@ class RevisedCommandView(View):
         return random.choice(possibles).format(person)
 
     def parse_command_person(self):
-        if self.command['person'] == '@ryanpitts' and self.command['botname'] == 'hey cody':
+        if self.command['person'] == '<@ryanpitts>' and self.command['botname'] == 'hey cody':
             self.command['person'] = 'Dad'
         
     def parse_command(self):
         self.raw_command = self.received.get('text', '')
         self.command = {
-            'person': '@' + self.received.get('user_name', 'channel'),
+            'person': '<@' + self.received.get('user_name', 'channel') + '>',
             'botname': '',
             'action': '',
             'text': '',
@@ -249,6 +249,8 @@ class RevisedCommandView(View):
 
         # split the command text into tokens
         tokens = self.command['text'].strip().split(' ')
+        exclude = set(string.punctuation)
+        tokens = [''.join(ch for ch in token if ch not in exclude) for token in tokens]
 
         for command in KNOWN_COMMANDS[self.command['botname']]:
             command_words = command.split(' ')
