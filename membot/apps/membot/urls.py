@@ -12,10 +12,10 @@ urlpatterns = patterns('',
         name    = 'membot_hello',
     ),
     url(
-        regex   = '^hey-cody/$',
+        regex   = '^hey-bmo/$',
         view    = RevisedCommandView.as_view(),
         kwargs  = {},
-        name    = 'hey_cody_command',
+        name    = 'hey_bmo_command',
     ),
     url(
         regex   = '^command/$',

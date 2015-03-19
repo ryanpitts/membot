@@ -14,11 +14,11 @@ from .commands.update_proposals import update_proposals
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
 ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
-BOT_NAMES = ['membot', 'hey cody']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey cody': ['publish proposals'],
+    'hey bmo': ['publish proposals'],
 }
+BOT_NAMES = KNOWN_COMMANDS.keys()
 
 def hello(request):
     return HttpResponse('Hello world this is membot')
@@ -202,7 +202,7 @@ class RevisedCommandView(View):
             try:
                 update_proposals()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0}. I just added the latest data to http://srccon.org/sessions/proposals.'.format(affirmative))
+                self.set_response('{0} I just added the latest data to http://srccon.org/sessions/proposals.'.format(affirmative))
             except:
                 self.set_response('Crap, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
@@ -215,7 +215,7 @@ class RevisedCommandView(View):
         self.response['text'] = text
         
     def random_affirmative(self, person):
-        possibles = ['On it, {0}', 'You got it, {0}', 'BOOM']
+        possibles = ['I have your back, {0}.', 'I am on it, {0}.', 'I am red hot like pizza supper, {0}.', 'BMO Chop! If this were a real attack, {0}, you\'d be dead. But', 'I used the combo move, {0}!']
         return random.choice(possibles).format(person)
 
     def parse_command_person(self):
