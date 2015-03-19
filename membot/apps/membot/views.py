@@ -48,7 +48,7 @@ class MembotCommandView(View):
     
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
-        return super(CommandView, self).dispatch(*args, **kwargs)
+        return super(MembotCommandView, self).dispatch(*args, **kwargs)
         
     def post(self, request, *args, **kwargs):
         received = request.POST
