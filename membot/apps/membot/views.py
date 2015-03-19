@@ -12,6 +12,7 @@ from .models import Memory
 from .commands.update_proposals import update_proposals
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
+ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 BOT_NAMES = ['membot', 'hey cody']
 KNOWN_COMMANDS = {
@@ -169,7 +170,7 @@ class RevisedCommandView(View):
         '''
         self.auth_token = self.received.get('token', None)
 
-        if self.auth_token != SLACK_TOKEN:
+        if self.auth_token != ALT_SLACK_TOKEN:
             return False
         return True
 
