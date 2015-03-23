@@ -22,7 +22,7 @@ class Project(models.Model):
         try:
             return self.projectdate_set.filter(itemdate__gte=today)[0]
         except:
-            return None
+            return ''
 
 class ProjectBulletPoint(models.Model):
     project = models.ForeignKey(Project)
@@ -51,6 +51,7 @@ class ProjectDate(models.Model):
         return '{0}: {1}'.format(self.project.name, self.name)
         
     def naturaldate(self):
+        today = datetime.today().date()
         if self.itemdate == today:
             return 'Today'
         if self.itemdate == (today + timedelta(days=1)):
