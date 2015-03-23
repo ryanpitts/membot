@@ -24,6 +24,7 @@ SCREENDOOR_RESPONSE_MAP = {
     'description_field_id': 11376,
     'facilitator_name_id': 11379,
     'facilitator_twitter_id': 11381,
+    'needs_cofacilitator': 11382,
     'cofacilitator_name_id': 11384,
     'cofacilitator_twitter_id': 11386,
 }
@@ -44,21 +45,31 @@ def transform_data(data):
     Pares down individual proposal items to just the fields we want to publish.
     '''
     def _transform_response_item(item):
-        transformed = {
+        _responses = item.get('responses', {})
+
+        # map Screendoor form fields to the JSON fields we want
+        _transformed = {
             'id': item.get('id', None),
             'submitted_at': item.get('submitted_at', None),
-            'title': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['title_field_id']), None),
-            'description': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['description_field_id']), None),
-            'facilitator': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['facilitator_name_id']), None),
-            'facilitator_twitter': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
-            'cofacilitator': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None),
-            'cofacilitator_twitter': item.get('responses', {}).get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None),
+            'title': _responses.get(str(SCREENDOOR_RESPONSE_MAP['title_field_id']), None),
+            'description': _responses.get(str(SCREENDOOR_RESPONSE_MAP['description_field_id']), None),
+            'facilitator': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_name_id']), None),
+            'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
+            'cofacilitator': None,
+            'cofacilitator_twitter': None,
         }
 
-        # strip empty spaces, and line breaks that Screendoor adds to text fields
-        transformed = { key: (value.strip().lstrip('\\n\\n') if isinstance(value, basestring) else value) for key, value in transformed.iteritems() }
+        # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
+        # we *don't* want the cofacilitator information they filled out
+        _needs_cofacilitator = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('selected', None) != 'Nope, I\'m all good'
+        if _needs_cofacilitator:
+            _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
+            _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
 
-        return transformed
+        # strip empty spaces, and line breaks that Screendoor adds to text fields
+        _transformed_item = { key: (value.strip().lstrip('\\n\\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
+
+        return _transformed_item
     
     transformed_data = [_transform_response_item(item) for item in data]
     
@@ -84,13 +95,13 @@ def make_proposal_json(data, store_locally=False):
     '''
     Turns data into nice JSON, and optionally stores to a local file.
     '''
-    json_out = json.dumps(data, sort_keys=True, indent=4, ensure_ascii=False).encode('utf-8')
+    json_out = json.dumps(data, sort_keys=True, indent=4, ensure_ascii=False)
     
     if store_locally:
         with io.open('proposals.json', 'w', encoding='utf8') as outfile:
             outfile.write(unicode(json_out))
 
-    return json_out
+    return json_out.encode('utf-8')
 
 def commit_proposal_json(data):
     '''
