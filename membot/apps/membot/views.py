@@ -8,8 +8,8 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
+from .commands import update_proposals, build_opennews_site
 from .models import Memory
-from .commands.update_proposals import update_proposals, build_opennews_site
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
 ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
