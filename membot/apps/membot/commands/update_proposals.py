@@ -33,10 +33,22 @@ def fetch_from_screendoor():
     '''
     Hit the Screendoor API and fetch proposals for `SCREENDOOR_PROJECT_ID`.
     '''
-    API_ENDPOINT = '{0}/projects/{1}/responses?v=0&api_key={2}'.format(SCREENDOOR_CONFIG['API_URL_PREFIX'], SCREENDOOR_CONFIG['PROJECT_ID'], SCREENDOOR_CONFIG['API_KEY'])
+    data = []
+
+    # compile data from the API, handling paginated responses
+    # by checking for 'next' in link header
+    def _fetch(url):
+        r = requests.get(url)
+        data.extend(r.json())
+
+        if 'next' in r.links:
+            _fetch(r.links['next']['url'])
     
-    r = requests.get(API_ENDPOINT)
-    data = r.json()
+    # build the first URL to hit    
+    API_ENDPOINT = '{0}/projects/{1}/responses?v=0&api_key={2}'.format(SCREENDOOR_CONFIG['API_URL_PREFIX'], SCREENDOOR_CONFIG['PROJECT_ID'], SCREENDOOR_CONFIG['API_KEY'])
+
+    # begin the fetch routine
+    _fetch(API_ENDPOINT)
 
     return data
 
