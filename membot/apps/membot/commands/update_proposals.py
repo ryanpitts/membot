@@ -95,11 +95,14 @@ def transform_data(data):
     
     return transformed_data
 
-def sort_data(data):
+def sort_data(data, alpha=False):
     '''
     Sort most recent proposals to the top, using `id` key as a shortcut.
     '''
-    sorted_data = sorted(data, key=itemgetter('id'), reverse=True)
+    if alpha:
+        sorted_data = sorted(data, key=itemgetter('title'))
+    else:
+        sorted_data = sorted(data, key=itemgetter('id'), reverse=True)
     
     return sorted_data
 
@@ -181,13 +184,16 @@ def update_proposals():
     data = filter_data(data, include_status='Confirmed -- accepted session')
 
     data = transform_data(data)
-    data = sort_data(data)
+    # PROPOSALS
+    #data = sort_data(data)
+    # SESSIONS
+    data = sort_data(data, alpha=True)
     #print 'Prepped the data ...'
 
     # PROPOSALS
     #proposal_json = make_json(data)
     # SESSIONS
-    session_json = make_json(data)
+    session_json = make_json(data, store_locally=False, filename='sessions.json')
     #print 'Made the local json!'
 
     # PROPOSALS
