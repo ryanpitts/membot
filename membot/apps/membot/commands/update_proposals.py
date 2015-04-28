@@ -1,3 +1,4 @@
+import argparse, os, sys, traceback
 import github3
 import io
 import json
@@ -15,7 +16,8 @@ GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
-    'DATA_PATH': '_data/proposals.yml',
+    'DATA_PATH_PROPOSALS': '_data/proposals.yml',
+    'DATA_PATH_SESSIONS': '_data/sessions.yml',
     'TARGET_BRANCH': 'gh-pages',
 }
 
@@ -27,6 +29,8 @@ SCREENDOOR_RESPONSE_MAP = {
     'needs_cofacilitator': 11382,
     'cofacilitator_name_id': 11384,
     'cofacilitator_twitter_id': 11386,
+    'cofacilitator_two_name_id': 13185,
+    'cofacilitator_two_twitter_id': 13187,
 }
 
 def fetch_from_screendoor():
@@ -69,6 +73,8 @@ def transform_data(data):
             'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
             'cofacilitator': None,
             'cofacilitator_twitter': None,
+            'cofacilitator_two': None,
+            'cofacilitator_two_twitter': None,
         }
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
@@ -77,6 +83,8 @@ def transform_data(data):
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
             _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
+            _transformed['cofacilitator_two'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_two_name_id']), None)
+            _transformed['cofacilitator_two_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_two_twitter_id']), None)
 
         # strip empty spaces, and line breaks that Screendoor adds to text fields
         _transformed_item = { key: (value.strip().lstrip('\\n\\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
@@ -95,27 +103,38 @@ def sort_data(data):
     
     return sorted_data
 
-def filter_data(data):
+def filter_data(data, exclude_label=None, include_label=None, exclude_status=None, include_status=None):
     '''
     Filters out proposal items that aren't intended for publication.
     '''
-    filtered_data = [item for item in data if not 'Hidden' in item['labels']]
+    
+    if exclude_label:
+        filtered_data = [item for item in data if not exclude_label in item['labels']]
+        
+    if include_label:
+        filtered_data = [item for item in data if include_label in item['labels']]
+        
+    if exclude_status:
+        filtered_data = [item for item in data if status != item['status']]
+
+    if include_status:
+        filtered_data = [item for item in data if include_status == item['status']]
 
     return filtered_data
 
-def make_proposal_json(data, store_locally=False):
+def make_json(data, store_locally=False, filename='proposals.json'):
     '''
     Turns data into nice JSON, and optionally stores to a local file.
     '''
     json_out = json.dumps(data, sort_keys=True, indent=4, ensure_ascii=False)
     
     if store_locally:
-        with io.open('proposals.json', 'w', encoding='utf8') as outfile:
+        with io.open(filename, 'w', encoding='utf8') as outfile:
             outfile.write(unicode(json_out))
 
     return json_out.encode('utf-8')
 
-def commit_proposal_json(data):
+def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_PROPOSALS']):
     '''
     Uses token to log into GitHub as `ryanpitts`, then gets the appropriate
     repo based on owner/name defined in GITHUB_CONFIG.
@@ -132,38 +151,57 @@ def commit_proposal_json(data):
     
     # check to see whether data file exists
     contents = repo.file_contents(
-        path=GITHUB_CONFIG['DATA_PATH'],
+        path=target_file,
         ref=GITHUB_CONFIG['TARGET_BRANCH']
     )
 
     if not contents:
         # create file that doesn't exist
         repo.create_file(
-            path=GITHUB_CONFIG['DATA_PATH'],
-            message='adding proposal data',
+            path=target_file,
+            message='adding session data',
             content=data,
             branch=GITHUB_CONFIG['TARGET_BRANCH']
         )
     else:
         # update existing file
         contents.update(
-            message='updating proposal data',
+            message='updating session data',
             content=data,
             branch=GITHUB_CONFIG['TARGET_BRANCH']
         )
-    
+
 def update_proposals():
     data = fetch_from_screendoor()
     #print 'Fetched the data ...'
-    data = filter_data(data)
+
+    # PROPOSALS
+    #data = filter_data(data, exclude_label='Hidden')
+    # SESSIONS
+    data = filter_data(data, include_status='Confirmed -- accepted session')
+
     data = transform_data(data)
     data = sort_data(data)
     #print 'Prepped the data ...'
-    proposal_json = make_proposal_json(data)
+
+    # PROPOSALS
+    #proposal_json = make_json(data)
+    # SESSIONS
+    session_json = make_json(data)
     #print 'Made the local json!'
-    commit_proposal_json(proposal_json)
+
+    # PROPOSALS
+    #commit_json(proposal_json)
+    # SESSIONS
+    commit_json(session_json, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS'])
     #print 'SENT THE DATA TO GITHUB!'
 
 
 if __name__ == "__main__":
-    update_proposals()
+    try:
+        update_proposals()
+    except Exception, e:
+        sys.stderr.write('\n')
+        traceback.print_exc(file=sys.stderr)
+        sys.stderr.write('\n')
+        sys.exit(1)
