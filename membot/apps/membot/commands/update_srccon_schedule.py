@@ -1,6 +1,7 @@
 import argparse, os, sys, traceback
 import github3
 import gspread
+import io
 import json
 import os
 import requests
@@ -35,15 +36,18 @@ def fetch_from_spreadsheet():
     datasheet = spreadsheet.worksheet('schedule data')
 
     data = datasheet.get_all_records(empty2zero=False)
-    print json.dumps(data, sort_keys=True, indent=4, ensure_ascii=False)
+
     return data
 
 def transform_data(data):
     '''
-    Pares down individual schedule items to just the fields we want to publish.
+    Transforms data and filters individual schedule items for fields we want
+    to publish. Currently, this:
+    
+    * ensures that all variables going into the JSON are strings
     '''
     def _transform_response_item(item):
-        _transformed_item = item
+        _transformed_item = {k: str(v) for k, v in item.iteritems()}
 
         return _transformed_item
     
@@ -102,15 +106,15 @@ def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS']):
 
 def update_schedule():
     data = fetch_from_spreadsheet()
-    print 'Fetched the data ...'
+    #print 'Fetched the data ...'
 
-    #data = transform_data(data)
+    data = transform_data(data)
     #print 'Prepped the data ...'
 
-    #session_json = make_json(data, store_locally=False)
+    session_json = make_json(data, store_locally=False)
     #print 'Made the local json!'
 
-    #commit_json(session_json)
+    commit_json(session_json)
     #print 'SENT THE DATA TO GITHUB!'
 
 
