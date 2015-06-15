@@ -104,7 +104,7 @@ def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS']):
             branch=GITHUB_CONFIG['TARGET_BRANCH']
         )
 
-def update_schedule():
+def update_srccon_schedule():
     data = fetch_from_spreadsheet()
     #print 'Fetched the data ...'
 
