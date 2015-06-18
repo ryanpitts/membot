@@ -47,8 +47,7 @@ def transform_data(data):
     * ensures that all variables going into the JSON are strings
     '''
     def _transform_response_item(item):
-        _transformed_item = {k: str(v) for k, v in item.iteritems()}
-
+        _transformed_item = {k: unicode(v) for k, v in item.iteritems()}
         return _transformed_item
     
     transformed_data = [_transform_response_item(item) for item in data]
