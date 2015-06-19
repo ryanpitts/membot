@@ -16,6 +16,14 @@ GITHUB_CONFIG = {
     'TARGET_BRANCH': 'gh-pages',
 }
 
+GITHUB_SRCCON_YAML_CONFIG = {
+    'TOKEN': os.environ['GITHUB_TOKEN'],
+    'REPO_OWNER': 'opennews',
+    'REPO_NAME': 'srccon',
+    'DATA_PATH_SESSIONS': '_data/schedule.yaml',
+    'TARGET_BRANCH': 'gh-pages',
+}
+
 GOOGLE_API_CONFIG = {
     'CLIENT_EMAIL': os.environ['GOOGLE_API_CLIENT_EMAIL'],
     'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'].decode('unicode_escape'),
@@ -66,7 +74,7 @@ def make_json(data, store_locally=False, filename=GITHUB_CONFIG['DATA_PATH_SESSI
 
     return json_out.encode('utf-8')
 
-def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS']):
+def commit_json(data, target_config=GITHUB_CONFIG):
     '''
     Uses token to log into GitHub as `ryanpitts`, then gets the appropriate
     repo based on owner/name defined in GITHUB_CONFIG.
@@ -76,24 +84,24 @@ def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS']):
     '''
     
     # authenticate with GitHub
-    gh = github3.login(token=GITHUB_CONFIG['TOKEN'])
+    gh = github3.login(token=target_config['TOKEN'])
     
     # get the right repo
-    repo = gh.repository(GITHUB_CONFIG['REPO_OWNER'], GITHUB_CONFIG['REPO_NAME'])
+    repo = gh.repository(target_config['REPO_OWNER'], target_config['REPO_NAME'])
     
     # check to see whether data file exists
     contents = repo.file_contents(
-        path=target_file,
-        ref=GITHUB_CONFIG['TARGET_BRANCH']
+        path=target_config['DATA_PATH_SESSIONS'],
+        ref=target_config['TARGET_BRANCH']
     )
 
     if not contents:
         # create file that doesn't exist
         repo.create_file(
-            path=target_file,
+            path=target_config['DATA_PATH_SESSIONS'],
             message='adding session data',
             content=data,
-            branch=GITHUB_CONFIG['TARGET_BRANCH']
+            branch=target_config['TARGET_BRANCH']
         )
     else:
         # update existing file
@@ -113,13 +121,16 @@ def update_srccon_schedule():
     session_json = make_json(data, store_locally=False)
     #print 'Made the local json!'
 
+    commit_json(session_json, target_config=GITHUB_SRCCON_YAML_CONFIG)
+    #print 'SENT THE DATA TO GITHUB!'
+
     commit_json(session_json)
     #print 'SENT THE DATA TO GITHUB!'
 
 
 if __name__ == "__main__":
     try:
-        update_schedule()
+        update_srccon_schedule()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
