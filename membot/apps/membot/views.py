@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from .commands import update_proposals, build_opennews_site, update_srccon_schedule
+from .commands import update_proposals, build_opennews_site, update_srccon_schedule, get_code_convening_repo_stats
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
@@ -16,7 +16,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule'],
+    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule', 'get code convening stats'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -207,13 +207,22 @@ class RevisedCommandView(View):
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
 
+        if action == 'get code convening stats':
+            stats = get_code_convening_repo_stats()
+            if stats:
+                affirmative = self.random_affirmative(self.command['person'])
+                self.set_response('{0} I checked GitHub, and there are {1} code convening repos, with {2} contributors, {3} forks, and {4} stars!'.format(affirmative, stats['projects'], stats['contributors'], stats['forks'], stats['stars']))
+            else:
+                self.set_response('Oh no, I asked GitHub for stats, but something went wrong, {0}.'.format(self.command['person']))
+            return JsonResponse(self.response)
+
         if action == 'build opennews':
             success = build_opennews_site()
             if success:
                 affirmative = self.random_affirmative(self.command['person'])
                 self.set_response('{0} I just rebuilt http://opennews.org.'.format(affirmative))
             else:
-                self.set_response('Oh no, I asked Jenkins but something went wrong, {0}.'.format(self.command['person']))
+                self.set_response('Oh no, I asked Jenkins, but something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
 
         if action == 'build srccon schedule':
