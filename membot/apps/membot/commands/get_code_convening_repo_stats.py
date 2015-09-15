@@ -37,7 +37,7 @@ GITHUB_REPOS = [
         'https://github.com/julia67/data-viz-for-all'
 ]
 
-def get_stats():
+def get_code_convening_repo_stats():
     stats = {
         'projects': 0,
         'contributors': 0,
@@ -71,7 +71,7 @@ def get_stats():
 
 if __name__ == "__main__":
     try:
-        get_stats()
+        get_code_convening_repo_stats()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
