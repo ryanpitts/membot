@@ -7,7 +7,7 @@ import requests
 from operator import itemgetter
 
 SCREENDOOR_CONFIG = {
-    'PROJECT_ID': 907,
+    'PROJECT_ID': 2480,
     'API_KEY': os.environ['SCREENDOOR_API_KEY'],
     'API_URL_PREFIX': 'https://screendoor.dobt.co/api',
 }
@@ -22,15 +22,13 @@ GITHUB_CONFIG = {
 }
 
 SCREENDOOR_RESPONSE_MAP = {
-    'title_field_id': 11373,
-    'description_field_id': 11376,
-    'facilitator_name_id': 11379,
-    'facilitator_twitter_id': 11381,
-    'needs_cofacilitator': 11382,
-    'cofacilitator_name_id': 11384,
-    'cofacilitator_twitter_id': 11386,
-    'cofacilitator_two_name_id': 13185,
-    'cofacilitator_two_twitter_id': 13187,
+    'title_field_id': 30914,
+    'description_field_id': 30915,
+    'facilitator_name_id': 30918,
+    'facilitator_twitter_id': 30920,
+    'needs_cofacilitator': 30921,
+    'cofacilitator_name_id': 30924,
+    'cofacilitator_twitter_id': 30926,
 }
 
 def fetch_from_screendoor():
@@ -73,8 +71,6 @@ def transform_data(data):
             'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
             'cofacilitator': None,
             'cofacilitator_twitter': None,
-            'cofacilitator_two': None,
-            'cofacilitator_two_twitter': None,
         }
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
@@ -83,8 +79,6 @@ def transform_data(data):
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
             _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
-            _transformed['cofacilitator_two'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_two_name_id']), None)
-            _transformed['cofacilitator_two_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_two_twitter_id']), None)
 
         # strip empty spaces, and line breaks that Screendoor adds to text fields
         _transformed_item = { key: (value.strip().lstrip('\\n\\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
@@ -179,27 +173,27 @@ def update_proposals():
     #print 'Fetched the data ...'
 
     # PROPOSALS
-    #data = filter_data(data, exclude_label='Hidden')
+    data = filter_data(data, exclude_label='Hidden')
     # SESSIONS
-    data = filter_data(data, include_status='Confirmed -- accepted session')
+    #data = filter_data(data, include_status='Confirmed -- accepted session')
 
     data = transform_data(data)
     # PROPOSALS
-    #data = sort_data(data)
+    data = sort_data(data)
     # SESSIONS
-    data = sort_data(data, alpha=True)
+    #data = sort_data(data, alpha=True)
     #print 'Prepped the data ...'
 
     # PROPOSALS
-    #proposal_json = make_json(data)
+    proposal_json = make_json(data, store_locally=False, filename='proposals.json')
     # SESSIONS
-    session_json = make_json(data, store_locally=False, filename='sessions.json')
+    #session_json = make_json(data, store_locally=False, filename='sessions.json')
     #print 'Made the local json!'
 
     # PROPOSALS
-    #commit_json(proposal_json)
+    commit_json(proposal_json)
     # SESSIONS
-    commit_json(session_json, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS'])
+    #commit_json(session_json, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS'])
     #print 'SENT THE DATA TO GITHUB!'
 
 
