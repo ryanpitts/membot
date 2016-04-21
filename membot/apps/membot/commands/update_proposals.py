@@ -81,7 +81,7 @@ def transform_data(data):
             _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
 
         # strip empty spaces, and line breaks that Screendoor adds to text fields
-        _transformed_item = { key: (value.strip().lstrip('\\n\\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
+        _transformed_item = { key: (value.strip().lstrip('\n\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
 
         return _transformed_item
     
