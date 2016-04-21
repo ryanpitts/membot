@@ -1,3 +1,4 @@
+arrow==0.7.0
 Django==1.7
 certifi==14.5.14
 cffi==1.1.2
@@ -19,6 +20,7 @@ newrelic==2.48.0.38
 oauth2client==1.4.11
 psycopg2==2.5.4
 pyOpenSSL==0.15.1
+python-dateutil==2.5.3
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
 pycparser==2.14
