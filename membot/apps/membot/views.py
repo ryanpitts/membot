@@ -4,6 +4,8 @@ import re
 import requests
 import string
 
+import arrow
+
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
@@ -16,7 +18,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule', 'get code convening stats'],
+    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule', 'get code convening stats', 'what time spokane'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -232,6 +234,11 @@ class RevisedCommandView(View):
                 self.set_response('{0} I just sent the data from our schedule spreadsheet into http://schedule.srccon.org/.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
+            return JsonResponse(self.response)
+
+        if action == 'what time spokane':
+            pacific_time = arrow.now('US/Pacific').format('H:mm a')
+            self.set_response('It is {0} there, {1}!'.format(pacific_time, self.command['person']))
             return JsonResponse(self.response)
 
         # we're only here if everything failed for some reason
