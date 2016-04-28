@@ -75,7 +75,8 @@ def transform_data(data):
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
         # we *don't* want the cofacilitator information they filled out
-        _needs_cofacilitator = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('selected', None) != 'Nope, I\'m all good'
+        _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('selected', None)
+        _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
             _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
