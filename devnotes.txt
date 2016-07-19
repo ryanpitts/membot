@@ -97,3 +97,10 @@ Stores big chunks of text that we might want to reference down the road. Imagine
 
 ## Messages
 Defines automatic emails to send, using data from other Membot apps.
+
+
+
+
+github3.py==0.9.4
+#github3.py==1.0.0a1
+#-e git+https://github.com/ryanpitts/github3.py.git@develop#egg=github3.py

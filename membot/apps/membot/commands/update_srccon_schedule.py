@@ -1,12 +1,9 @@
-import argparse, os, sys, traceback
+import os, sys, traceback
 import github3
 import gspread
 import io
 import json
 import logging
-import os
-import requests
-from datetime import datetime
 from logging.config import dictConfig
 from oauth2client.client import SignedJwtAssertionCredentials
 
@@ -29,7 +26,7 @@ GITHUB_SRCCON_YAML_CONFIG = {
 GOOGLE_API_CONFIG = {
     'CLIENT_EMAIL': os.environ['GOOGLE_API_CLIENT_EMAIL'],
     'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'].decode('unicode_escape'),
-    'SCOPE': ['https://spreadsheets.google.com/feeds']
+    'SCOPE': ['https://spreadsheets.google.com/feeds'],
 }
 
 # the unique ID of the spreadsheet with your data can be stored
@@ -205,7 +202,7 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
                     logger.info('Data updated, new commit to repo')
                 
 
-def update_data():
+def update_srccon_schedule():
     data = fetch_data(multiple_sheets=FETCH_MULTIPLE_WORKSHEETS, worksheets_to_skip=WORKSHEETS_TO_SKIP)
     #print 'Fetched the data ...'
 
@@ -263,7 +260,7 @@ logger = logging.getLogger('schedule_loader')
 
 if __name__ == "__main__":
     try:
-        update_data()
+        update_srccon_schedule()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
