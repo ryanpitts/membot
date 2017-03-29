@@ -7,7 +7,7 @@ import requests
 from operator import itemgetter
 
 SCREENDOOR_CONFIG = {
-    'PROJECT_ID': 2480,
+    'PROJECT_ID': 3803,
     'API_KEY': os.environ['SCREENDOOR_API_KEY'],
     'API_URL_PREFIX': 'https://screendoor.dobt.co/api',
 }
@@ -18,7 +18,7 @@ GITHUB_CONFIG = {
     'REPO_NAME': 'srccon',
     'DATA_PATH_PROPOSALS': '_data/proposals.yml',
     'DATA_PATH_SESSIONS': '_data/sessions.yml',
-    'TARGET_BRANCH': 'gh-pages',
+    'TARGET_BRANCH': 'master',
 }
 
 SCREENDOOR_RESPONSE_MAP = {
@@ -75,7 +75,7 @@ def transform_data(data):
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
         # we *don't* want the cofacilitator information they filled out
-        _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('selected', None)
+        _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('checked', None)
         _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
