@@ -2,8 +2,10 @@ import argparse, os, sys, traceback
 import github3
 import io
 import json
+import logging
 import os
 import requests
+from logging.config import dictConfig
 from operator import itemgetter
 
 SCREENDOOR_CONFIG = {
@@ -12,13 +14,20 @@ SCREENDOOR_CONFIG = {
     'API_URL_PREFIX': 'https://screendoor.dobt.co/api',
 }
 
-GITHUB_CONFIG = {
+GITHUB_PROPOSALS_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
-    'DATA_PATH_PROPOSALS': '_data/proposals.yml',
-    'DATA_PATH_SESSIONS': '_data/sessions.yml',
-    'TARGET_BRANCH': 'master',
+    'TARGET_FILE': '_data/proposals.yml',
+    'TARGET_BRANCHES': ['master',],
+}
+
+GITHUB_SESSIONS_CONFIG = {
+    'TOKEN': os.environ['GITHUB_TOKEN'],
+    'REPO_OWNER': 'opennews',
+    'REPO_NAME': 'srccon',
+    'TARGET_FILE': '_data/sessions.yml',
+    'TARGET_BRANCHES': ['master',],
 }
 
 SCREENDOOR_RESPONSE_MAP = {
@@ -30,6 +39,12 @@ SCREENDOOR_RESPONSE_MAP = {
     'cofacilitator_name_id': 30924,
     'cofacilitator_twitter_id': 30926,
 }
+
+# set to True to store local version of JSON
+MAKE_LOCAL_JSON = False
+
+# set to False for dry runs
+COMMIT_JSON_TO_GITHUB = True
 
 def fetch_from_screendoor():
     '''
@@ -132,7 +147,7 @@ def make_json(data, store_locally=False, filename='proposals.json'):
 
     return json_out.encode('utf-8')
 
-def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_PROPOSALS']):
+def commit_json(data, target_config=GITHUB_PROPOSALS_CONFIG, commit=COMMIT_JSON_TO_GITHUB):
     '''
     Uses token to log into GitHub as `ryanpitts`, then gets the appropriate
     repo based on owner/name defined in GITHUB_CONFIG.
@@ -142,32 +157,42 @@ def commit_json(data, target_file=GITHUB_CONFIG['DATA_PATH_PROPOSALS']):
     '''
     
     # authenticate with GitHub
-    gh = github3.login(token=GITHUB_CONFIG['TOKEN'])
+    gh = github3.login(token=target_config['TOKEN'])
     
     # get the right repo
-    repo = gh.repository(GITHUB_CONFIG['REPO_OWNER'], GITHUB_CONFIG['REPO_NAME'])
+    repo = gh.repository(target_config['REPO_OWNER'], target_config['REPO_NAME'])
     
-    # check to see whether data file exists
-    contents = repo.file_contents(
-        path=target_file,
-        ref=GITHUB_CONFIG['TARGET_BRANCH']
-    )
+    for branch in target_config['TARGET_BRANCHES']:
+        # check to see whether data file exists
+        contents = repo.contents(
+            path=target_config['TARGET_FILE'],
+            ref=branch
+        )
 
-    if not contents:
-        # create file that doesn't exist
-        repo.create_file(
-            path=target_file,
-            message='adding session data',
-            content=data,
-            branch=GITHUB_CONFIG['TARGET_BRANCH']
-        )
-    else:
-        # update existing file
-        contents.update(
-            message='updating session data',
-            content=data,
-            branch=GITHUB_CONFIG['TARGET_BRANCH']
-        )
+        if commit:
+            if not contents:
+                # create file that doesn't exist
+                repo.create_file(
+                    path=target_config['TARGET_FILE'],
+                    message='adding session data',
+                    content=data,
+                    branch=branch
+                )
+                logger.info('Created new data file in repo')
+            else:
+                # if data has changed, update existing file
+                if data.decode('utf-8') == contents.decoded.decode('utf-8'):
+                    logger.info('Data has not changed, no commit created')
+                else:
+                    repo.update_file(
+                        path=target_config['TARGET_FILE'],
+                        message='updating schedule data',
+                        content=data,
+                        sha=contents.sha,
+                        branch=branch
+                    )
+                    logger.info('Data updated, new commit to repo')
+
 
 def update_proposals():
     data = fetch_from_screendoor()
@@ -186,16 +211,55 @@ def update_proposals():
     #print 'Prepped the data ...'
 
     # PROPOSALS
-    proposal_json = make_json(data, store_locally=False, filename='proposals.json')
+    json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')
     # SESSIONS
     #session_json = make_json(data, store_locally=False, filename='sessions.json')
     #print 'Made the local json!'
 
     # PROPOSALS
-    commit_json(proposal_json)
+    commit_json(json_data)
     # SESSIONS
-    #commit_json(session_json, target_file=GITHUB_CONFIG['DATA_PATH_SESSIONS'])
+    #commit_json(json_data, target_config=GITHUB_SESSIONS_CONFIG)
     #print 'SENT THE DATA TO GITHUB!'
+
+
+'''
+Set up logging.
+'''
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'log.txt',
+            'formatter': 'verbose'
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        'schedule_loader': {
+            'handlers':['console'],
+            'propagate': False,
+            'level':'DEBUG',
+        }
+    }
+}
+dictConfig(LOGGING)
+logger = logging.getLogger('schedule_loader')
 
 
 if __name__ == "__main__":
