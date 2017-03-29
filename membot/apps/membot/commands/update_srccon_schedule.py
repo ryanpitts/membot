@@ -212,7 +212,7 @@ def update_srccon_schedule():
     json_data = make_json(data, store_locally=MAKE_LOCAL_JSON)
     #print 'Made some JSON!'
 
-    #commit_json(session_json, target_config=GITHUB_SRCCON_YAML_CONFIG)
+    commit_json(json_data, target_config=GITHUB_SRCCON_YAML_CONFIG)
     #print 'SENT THE DATA TO GITHUB!'
 
     commit_json(json_data)
