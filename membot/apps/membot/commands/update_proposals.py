@@ -41,10 +41,10 @@ SCREENDOOR_RESPONSE_MAP = {
 }
 
 # set to True to store local version of JSON
-MAKE_LOCAL_JSON = False
+MAKE_LOCAL_JSON = True
 
 # set to False for dry runs
-COMMIT_JSON_TO_GITHUB = True
+COMMIT_JSON_TO_GITHUB = False
 
 def fetch_from_screendoor():
     '''
@@ -86,12 +86,14 @@ def transform_data(data):
             'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
             'cofacilitator': None,
             'cofacilitator_twitter': None,
+            'cofacilitator_two': None,
+            'cofacilitator_two_twitter': None,
         }
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
         # we *don't* want the cofacilitator information they filled out
         _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('checked', None)
-        _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box
+        _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box[0]
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
             _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
@@ -199,27 +201,27 @@ def update_proposals():
     #print 'Fetched the data ...'
 
     # PROPOSALS
-    data = filter_data(data, exclude_label='Hidden')
+    #data = filter_data(data, exclude_label='Hidden')
     # SESSIONS
-    #data = filter_data(data, include_status='Confirmed -- accepted session')
+    data = filter_data(data, include_status='Confirmed')
 
     data = transform_data(data)
     # PROPOSALS
-    data = sort_data(data)
+    #data = sort_data(data)
     # SESSIONS
-    #data = sort_data(data, alpha=True)
+    data = sort_data(data, alpha=True)
     #print 'Prepped the data ...'
 
     # PROPOSALS
-    json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')
+    #json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')
     # SESSIONS
-    #session_json = make_json(data, store_locally=False, filename='sessions.json')
+    session_json = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='sessions.json')
     #print 'Made the local json!'
 
     # PROPOSALS
-    commit_json(json_data)
+    #commit_json(json_data)
     # SESSIONS
-    #commit_json(json_data, target_config=GITHUB_SESSIONS_CONFIG)
+    commit_json(session_json, target_config=GITHUB_SESSIONS_CONFIG)
     #print 'SENT THE DATA TO GITHUB!'
 
 
