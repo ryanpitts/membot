@@ -20,7 +20,7 @@ GITHUB_SRCCON_YAML_CONFIG = {
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
     'TARGET_FILE': '_data/schedule.yaml',
-    'TARGET_BRANCHES': ['gh-pages'],
+    'TARGET_BRANCHES': ['master'],
 }
 
 GOOGLE_API_CONFIG = {
