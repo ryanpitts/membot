@@ -15,6 +15,14 @@ GITHUB_CONFIG = {
     'TARGET_BRANCHES': ['staging','master',],# choose one or more branches
 }
 
+GITHUB_SRCCON_YAML_CONFIG = {
+    'TOKEN': os.environ['GITHUB_TOKEN'],
+    'REPO_OWNER': 'opennews',
+    'REPO_NAME': 'srccon-work',
+    'TARGET_FILE': '_data/schedule.yaml',
+    'TARGET_BRANCHES': ['staging','master',],
+}
+
 GOOGLE_API_CONFIG = {
     'CLIENT_EMAIL': os.environ['GOOGLE_API_CLIENT_EMAIL'],
     'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'].decode('unicode_escape'),
@@ -204,8 +212,11 @@ def update_srccon_work_schedule():
     json_data = make_json(data, store_locally=MAKE_LOCAL_JSON)
     #print 'Made some JSON!'
 
+    commit_json(json_data, target_config=GITHUB_SRCCON_YAML_CONFIG)
+    #print 'Sent the yaml data to GitHub!'
+
     commit_json(json_data)
-    #print 'Sent the data to GitHub!'
+    #print 'Sent the json data to GitHub!'
 
 
 '''
