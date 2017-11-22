@@ -199,40 +199,7 @@ class RevisedCommandView(View):
                 suffix = ' (Yeah, I don\'t get to do a lot yet.)' 
             self.set_response('Hmmm, I\'m not sure how to do that, {0}. Here\'s what I\'m authorized to do: {1}.{2}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']]), suffix))
             return JsonResponse(self.response)
-'''
-        if action == 'publish proposals':
-            try:
-                update_proposals()
-                affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just added the latest data to http://srccon.org/sessions/proposals.'.format(affirmative))
-            except:
-                self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
-            return JsonResponse(self.response)
 
-        if action == 'get code convening stats':
-            stats = get_code_convening_repo_stats()
-            if stats:
-                affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I checked GitHub, and there are {1} code convening repos, with {2} contributors, {3} forks, and {4} stars!'.format(affirmative, stats['projects'], stats['contributors'], stats['forks'], stats['stars']))
-            else:
-                self.set_response('Oh no, I asked GitHub for stats, but something went wrong, {0}.'.format(self.command['person']))
-            return JsonResponse(self.response)
-
-        if action == 'build opennews':
-            success = build_opennews_site()
-            if success:
-                affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just rebuilt http://opennews.org.'.format(affirmative))
-            else:
-                self.set_response('Oh no, I asked Jenkins, but something went wrong, {0}.'.format(self.command['person']))
-            return JsonResponse(self.response)
-
-
-        if action == 'what time spokane':
-            pacific_time = arrow.now('US/Pacific').format('H:mm a')
-            self.set_response('It is {0} there, {1}!'.format(pacific_time, self.command['person']))
-            return JsonResponse(self.response)
-'''
         if action == 'build srccon schedule':
             try:
                 update_srccon_schedule()
