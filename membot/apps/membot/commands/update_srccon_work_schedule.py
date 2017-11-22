@@ -204,9 +204,6 @@ def update_srccon_work_schedule():
     json_data = make_json(data, store_locally=MAKE_LOCAL_JSON)
     #print 'Made some JSON!'
 
-    commit_json(json_data, target_config=GITHUB_SRCCON_YAML_CONFIG)
-    #print 'SENT THE DATA TO GITHUB!'
-
     commit_json(json_data)
     #print 'Sent the data to GitHub!'
 
@@ -252,7 +249,7 @@ logger = logging.getLogger('schedule_loader')
 
 if __name__ == "__main__":
     try:
-        update_srccon_schedule()
+        update_srccon_work_schedule()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
