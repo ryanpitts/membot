@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from .commands import update_proposals, build_opennews_site, update_srccon_schedule, get_code_convening_repo_stats
+from .commands import update_proposals, build_opennews_site, update_srccon_schedule, get_code_convening_repo_stats, update_srccon_work_schedule
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
@@ -18,7 +18,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule', 'get code convening stats', 'what time spokane'],
+    'hey bmo': ['publish proposals', 'build opennews', 'build srccon schedule', 'get code convening stats', 'what time spokane', 'build srcconwork schedule', 'build srccon:work schedule',],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -230,6 +230,15 @@ class RevisedCommandView(View):
         if action == 'build srccon schedule':
             try:
                 update_srccon_schedule()
+                affirmative = self.random_affirmative(self.command['person'])
+                self.set_response('{0} I just sent the data from our schedule spreadsheet into http://schedule.srccon.org/.'.format(affirmative))
+            except:
+                self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
+            return JsonResponse(self.response)
+
+        if action in ['build srcconwork schedule','build srccon:work schedule']:
+            try:
+                update_srccon_work_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
                 self.set_response('{0} I just sent the data from our schedule spreadsheet into http://schedule.srccon.org/.'.format(affirmative))
             except:
