@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1GmYLCGBvnEWxYIuH1C-SbIQ0FrC9m1oLUx_NL896R8g'
+GOOGLE_SPREADSHEET_KEY = '1vyQNUmFEvF--LjKEzX3ukWpC7kXnp7cSCMOn4qDtTB4'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
@@ -172,10 +172,13 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
     
     for branch in target_config['TARGET_BRANCHES']:
         # check to see whether data file exists
-        contents = repo.contents(
-            path=target_config['TARGET_FILE'],
-            ref=branch
-        )
+        try:
+            contents = repo.file_contents(
+                path=target_config['TARGET_FILE'],
+                ref=branch
+            )
+        except:
+            contents = None
 
         if commit:
             if not contents:

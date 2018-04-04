@@ -9,12 +9,12 @@ from logging.config import dictConfig
 from operator import itemgetter
 
 SCREENDOOR_CONFIG = {
-    'PROJECT_ID': 3803,
+    'PROJECT_ID': 5305,
     'API_KEY': os.environ['SCREENDOOR_API_KEY'],
     'API_URL_PREFIX': 'https://screendoor.dobt.co/api',
 }
 
-GITHUB_PROPOSALS_CONFIG = {
+GITHUB_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
@@ -22,29 +22,23 @@ GITHUB_PROPOSALS_CONFIG = {
     'TARGET_BRANCHES': ['master',],
 }
 
-GITHUB_SESSIONS_CONFIG = {
-    'TOKEN': os.environ['GITHUB_TOKEN'],
-    'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon',
-    'TARGET_FILE': '_data/sessions.yml',
-    'TARGET_BRANCHES': ['master',],
-}
+# get a map of form fields
+# 'https://screendoor.dobt.co/api/projects/{0}/form?v=0&api_key={1}'.format(SCREENDOOR_CONFIG['PROJECT_ID'], SCREENDOOR_CONFIG['API_KEY'])
 
 SCREENDOOR_RESPONSE_MAP = {
-    'title_field_id': 30914,
-    'description_field_id': 30915,
-    'facilitator_name_id': 30918,
-    'facilitator_twitter_id': 30920,
-    'needs_cofacilitator': 30921,
-    'cofacilitator_name_id': 30924,
-    'cofacilitator_twitter_id': 30926,
+    'propose_session_checkbox': '91twrtgx',
+    'session_title_field_id': 'ka6d5eb6',
+    'description_field_id': 'qnr04cox',
+    'facilitator_name_id': 'l8uptaa7',
+    'needs_cofacilitator_checkbox': 'h35o9cep',
+    'cofacilitator_name_id': 'lu3zsi66',
 }
 
 # set to True to store local version of JSON
-MAKE_LOCAL_JSON = True
+MAKE_LOCAL_JSON = False
 
 # set to False for dry runs
-COMMIT_JSON_TO_GITHUB = False
+COMMIT_JSON_TO_GITHUB = True
 
 def fetch_from_screendoor():
     '''
@@ -75,36 +69,43 @@ def transform_data(data):
     '''
     def _transform_response_item(item):
         _responses = item.get('responses', {})
+        
+        # CFP form captures more than just session proposals, so let's make sure we have a session to add
+        # assume not a proposal to start
+        _is_proposal = False
+        # see if the "What would you like to do with a session at SRCCON" form option was exposed
+        _session_proposal_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['propose_session_checkbox']), None)
+        # see if they marked the "I'd like to propose a session" option
+        if _session_proposal_checked_box:
+            _session_proposal_checked_box_value = _session_proposal_checked_box.get('checked', None)
+            # flip `_is_proposal` to True if they marked this as a proposal
+            _is_proposal = "propose a session" in _session_proposal_checked_box_value[0]
+        if not _is_proposal: return None
 
-        # map Screendoor form fields to the JSON fields we want
+        # if we have a proposal, map Screendoor form fields to the JSON fields we want
         _transformed = {
             'id': item.get('id', None),
             'submitted_at': item.get('submitted_at', None),
-            'title': _responses.get(str(SCREENDOOR_RESPONSE_MAP['title_field_id']), None),
+            'title': _responses.get(str(SCREENDOOR_RESPONSE_MAP['session_title_field_id']), None),
             'description': _responses.get(str(SCREENDOOR_RESPONSE_MAP['description_field_id']), None),
             'facilitator': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_name_id']), None),
-            'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
             'cofacilitator': None,
-            'cofacilitator_twitter': None,
-            'cofacilitator_two': None,
-            'cofacilitator_two_twitter': None,
         }
 
         # if submitter fills in cofacilitator data but then changes dropdown back to "nope,"
         # we *don't* want the cofacilitator information they filled out
-        _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator']), None).get('checked', None)
+        _cofacilitator_checked_box = _responses.get(str(SCREENDOOR_RESPONSE_MAP['needs_cofacilitator_checkbox']), None).get('checked', None)
         _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box[0]
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
-            _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
 
         # strip empty spaces, and line breaks that Screendoor adds to text fields
         _transformed_item = { key: (value.strip().lstrip('\n\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
 
         return _transformed_item
     
-    transformed_data = [_transform_response_item(item) for item in data]
-    
+    transformed_data = [_transform_response_item(item) for item in data if _transform_response_item(item) is not None]
+
     return transformed_data
 
 def sort_data(data, alpha=False):
@@ -137,7 +138,7 @@ def filter_data(data, exclude_label=None, include_label=None, exclude_status=Non
 
     return filtered_data
 
-def make_json(data, store_locally=False, filename='proposals.json'):
+def make_json(data, store_locally=False, filename=GITHUB_YAML_CONFIG['TARGET_FILE']):
     '''
     Turns data into nice JSON, and optionally stores to a local file.
     '''
@@ -149,7 +150,7 @@ def make_json(data, store_locally=False, filename='proposals.json'):
 
     return json_out.encode('utf-8')
 
-def commit_json(data, target_config=GITHUB_PROPOSALS_CONFIG, commit=COMMIT_JSON_TO_GITHUB):
+def commit_json(data, target_config=GITHUB_YAML_CONFIG, commit=COMMIT_JSON_TO_GITHUB):
     '''
     Uses token to log into GitHub as `ryanpitts`, then gets the appropriate
     repo based on owner/name defined in GITHUB_CONFIG.
@@ -166,10 +167,13 @@ def commit_json(data, target_config=GITHUB_PROPOSALS_CONFIG, commit=COMMIT_JSON_
     
     for branch in target_config['TARGET_BRANCHES']:
         # check to see whether data file exists
-        contents = repo.contents(
-            path=target_config['TARGET_FILE'],
-            ref=branch
-        )
+        try:
+            contents = repo.file_contents(
+                path=target_config['TARGET_FILE'],
+                ref=branch
+            )
+        except:
+            contents = None
 
         if commit:
             if not contents:
@@ -200,29 +204,20 @@ def update_proposals():
     data = fetch_from_screendoor()
     #print 'Fetched the data ...'
 
-    # PROPOSALS
-    #data = filter_data(data, exclude_label='Hidden')
-    # SESSIONS
-    data = filter_data(data, include_status='Confirmed')
+    data = filter_data(data, exclude_label='Hidden')
+    #print 'Filtered out test responses ...'
 
     data = transform_data(data)
-    # PROPOSALS
-    #data = sort_data(data)
-    # SESSIONS
-    data = sort_data(data, alpha=True)
     #print 'Prepped the data ...'
 
-    # PROPOSALS
-    #json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')
-    # SESSIONS
-    session_json = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='sessions.json')
-    #print 'Made the local json!'
+    data = sort_data(data)
+    #print 'Sorted the data ...'    
 
-    # PROPOSALS
-    #commit_json(json_data)
-    # SESSIONS
-    commit_json(session_json, target_config=GITHUB_SESSIONS_CONFIG)
-    #print 'SENT THE DATA TO GITHUB!'
+    json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')
+    #print 'Made some JSON!'
+
+    commit_json(json_data)
+    #print 'SENT THE DATA TO GITHUB (if you asked me to)!'
 
 
 '''
