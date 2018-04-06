@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from .commands import update_srccon_schedule, update_srccon_work_schedule
+from .commands import update_proposals, update_srccon_schedule, update_srccon_work_schedule
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
@@ -18,7 +18,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['build srccon schedule', 'build srcconwork schedule', 'build srccon:work schedule'],
+    'hey bmo': ['build srccon schedule', 'build srcconwork schedule', 'build srccon:work schedule', 'update srccon proposals'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -198,6 +198,15 @@ class RevisedCommandView(View):
             if len(KNOWN_COMMANDS[self.command['botname']]) < 2:
                 suffix = ' (Yeah, I don\'t get to do a lot yet.)' 
             self.set_response('Hmmm, I\'m not sure how to do that, {0}. Here\'s what I\'m authorized to do: {1}.{2}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']]), suffix))
+            return JsonResponse(self.response)
+
+        if action == 'update srccon proposals':
+            try:
+                update_proposals()
+                affirmative = self.random_affirmative(self.command['person'])
+                self.set_response('{0} I just sent the data from Screendoor over to https://srccon.org/sessions/proposals/.'.format(affirmative))
+            except:
+                self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
 
         if action == 'build srccon schedule':
