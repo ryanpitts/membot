@@ -33,6 +33,7 @@ SCREENDOOR_RESPONSE_MAP = {
     'facilitator_twitter_id': '9ytau0xf',
     'needs_cofacilitator_checkbox': 'h35o9cep',
     'cofacilitator_name_id': 'lu3zsi66',
+    'cofacilitator_twitter_id': 'f8u6qpk2',
 }
 
 # set to True to store local version of JSON
@@ -100,6 +101,7 @@ def transform_data(data):
         _needs_cofacilitator = "have someone in mind" in _cofacilitator_checked_box[0]
         if _needs_cofacilitator:
             _transformed['cofacilitator'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_name_id']), None)
+            _transformed['cofacilitator_twitter'] = _responses.get(str(SCREENDOOR_RESPONSE_MAP['cofacilitator_twitter_id']), None)
 
         # strip empty spaces, and line breaks that Screendoor adds to text fields
         _transformed_item = { key: (value.strip().lstrip('\n\n') if isinstance(value, basestring) else value) for key, value in _transformed.iteritems() }
