@@ -30,6 +30,7 @@ SCREENDOOR_RESPONSE_MAP = {
     'session_title_field_id': 'ka6d5eb6',
     'description_field_id': 'qnr04cox',
     'facilitator_name_id': 'l8uptaa7',
+    'facilitator_twitter_id': '9ytau0xf',
     'needs_cofacilitator_checkbox': 'h35o9cep',
     'cofacilitator_name_id': 'lu3zsi66',
 }
@@ -89,6 +90,7 @@ def transform_data(data):
             'title': _responses.get(str(SCREENDOOR_RESPONSE_MAP['session_title_field_id']), None),
             'description': _responses.get(str(SCREENDOOR_RESPONSE_MAP['description_field_id']), None),
             'facilitator': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_name_id']), None),
+            'facilitator_twitter': _responses.get(str(SCREENDOOR_RESPONSE_MAP['facilitator_twitter_id']), None),
             'cofacilitator': None,
         }
 
