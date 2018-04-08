@@ -18,7 +18,7 @@ GITHUB_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
-    'TARGET_FILE': '_data/proposals.yml',
+    'TARGET_FILE': '_data/proposals.yaml',
     'TARGET_BRANCHES': ['master',],
 }
 
@@ -142,7 +142,7 @@ def filter_data(data, exclude_label=None, include_label=None, exclude_status=Non
 
     return filtered_data
 
-def make_json(data, store_locally=False, filename=GITHUB_YAML_CONFIG['TARGET_FILE']):
+def make_json(data, store_locally=False, filename='proposals.json'):
     '''
     Turns data into nice JSON, and optionally stores to a local file.
     '''
@@ -184,7 +184,7 @@ def commit_json(data, target_config=GITHUB_YAML_CONFIG, commit=COMMIT_JSON_TO_GI
                 # create file that doesn't exist
                 repo.create_file(
                     path=target_config['TARGET_FILE'],
-                    message='adding session data',
+                    message='adding proposal data',
                     content=data,
                     branch=branch
                 )
@@ -194,11 +194,9 @@ def commit_json(data, target_config=GITHUB_YAML_CONFIG, commit=COMMIT_JSON_TO_GI
                 if data.decode('utf-8') == contents.decoded.decode('utf-8'):
                     logger.info('Data has not changed, no commit created')
                 else:
-                    repo.update_file(
-                        path=target_config['TARGET_FILE'],
-                        message='updating schedule data',
+                    contents.update(
+                        message='updating proposal data',
                         content=data,
-                        sha=contents.sha,
                         branch=branch
                     )
                     logger.info('Data updated, new commit to repo')

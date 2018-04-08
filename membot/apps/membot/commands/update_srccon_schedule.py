@@ -185,7 +185,7 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
                 # create file that doesn't exist
                 repo.create_file(
                     path=target_config['TARGET_FILE'],
-                    message='adding session data',
+                    message='adding session data for schedule',
                     content=data,
                     branch=branch
                 )
@@ -195,11 +195,9 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
                 if data.decode('utf-8') == contents.decoded.decode('utf-8'):
                     logger.info('Data has not changed, no commit created')
                 else:
-                    repo.update_file(
-                        path=target_config['TARGET_FILE'],
+                    contents.update(
                         message='updating schedule data',
                         content=data,
-                        sha=contents.sha,
                         branch=branch
                     )
                     logger.info('Data updated, new commit to repo')
