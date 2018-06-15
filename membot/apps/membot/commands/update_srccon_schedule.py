@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1vyQNUmFEvF--LjKEzX3ukWpC7kXnp7cSCMOn4qDtTB4'
+GOOGLE_SPREADSHEET_KEY = '1uDyeqfAQwW0WrnlCPlT8hstHXC7jAvoUwaR90t_rihA'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
