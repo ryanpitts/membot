@@ -10,7 +10,7 @@ from oauth2client.client import SignedJwtAssertionCredentials
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-work',
+    'REPO_NAME': 'srccon-power',
     'TARGET_FILE': 'schedule/sessions.json',
     'TARGET_BRANCHES': ['staging','master',],# choose one or more branches
 }
@@ -18,7 +18,7 @@ GITHUB_CONFIG = {
 GITHUB_SRCCON_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-work',
+    'REPO_NAME': 'srccon-power',
     'TARGET_FILE': '_data/schedule.yaml',
     'TARGET_BRANCHES': ['staging','master',],
 }
@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1vyQNUmFEvF--LjKEzX3ukWpC7kXnp7cSCMOn4qDtTB4'
+GOOGLE_SPREADSHEET_KEY = '1QuWu3mi0QF9BBtDTYidJ-G6y7G6KpnZ2vb0k2fr1JXM'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
@@ -172,17 +172,20 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
     
     for branch in target_config['TARGET_BRANCHES']:
         # check to see whether data file exists
-        contents = repo.contents(
-            path=target_config['TARGET_FILE'],
-            ref=branch
-        )
+        try:
+            contents = repo.file_contents(
+                path=target_config['TARGET_FILE'],
+                ref=branch
+            )
+        except:
+            contents = None
 
         if commit:
             if not contents:
                 # create file that doesn't exist
                 repo.create_file(
                     path=target_config['TARGET_FILE'],
-                    message='adding session data',
+                    message='adding session data for schedule',
                     content=data,
                     branch=branch
                 )
@@ -192,17 +195,15 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
                 if data.decode('utf-8') == contents.decoded.decode('utf-8'):
                     logger.info('Data has not changed, no commit created')
                 else:
-                    repo.update_file(
-                        path=target_config['TARGET_FILE'],
+                    contents.update(
                         message='updating schedule data',
                         content=data,
-                        sha=contents.sha,
                         branch=branch
                     )
                     logger.info('Data updated, new commit to repo')
                 
 
-def update_srccon_work_schedule():
+def update_srccon_power_schedule():
     data = fetch_data(multiple_sheets=FETCH_MULTIPLE_WORKSHEETS, worksheets_to_skip=WORKSHEETS_TO_SKIP)
     #print 'Fetched the data ...'
 
@@ -260,7 +261,7 @@ logger = logging.getLogger('schedule_loader')
 
 if __name__ == "__main__":
     try:
-        update_srccon_work_schedule()
+        update_srccon_power_schedule()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
