@@ -9,7 +9,7 @@ from logging.config import dictConfig
 from operator import itemgetter
 
 SCREENDOOR_CONFIG = {
-    'PROJECT_ID': 5305,
+    'PROJECT_ID': 6917,
     'API_KEY': os.environ['SCREENDOOR_API_KEY'],
     'API_URL_PREFIX': 'https://screendoor.dobt.co/api',
 }
@@ -19,7 +19,7 @@ GITHUB_YAML_CONFIG = {
     'REPO_OWNER': 'opennews',
     'REPO_NAME': 'srccon',
     'TARGET_FILE': '_data/proposals.yaml',
-    'TARGET_BRANCHES': ['master',],
+    'TARGET_BRANCHES': ['master','staging',],
 }
 
 # get a map of form fields
@@ -264,7 +264,7 @@ logger = logging.getLogger('schedule_loader')
 if __name__ == "__main__":
     try:
         update_proposals()
-    except Exception, e:
+    except Exception:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
         sys.stderr.write('\n')
