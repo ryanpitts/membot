@@ -213,7 +213,7 @@ class RevisedCommandView(View):
             try:
                 update_srccon_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from our schedule spreadsheet into http://schedule.srccon.org/.'.format(affirmative))
+                self.set_response('{0} I just sent the data from our schedule spreadsheet into https://schedule.srccon.org/.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
@@ -235,7 +235,7 @@ class RevisedCommandView(View):
         self.response['text'] = text
         
     def random_affirmative(self, person):
-        possibles = ['I have your back, {0}.', 'I am on it, {0}.', 'I am red hot like pizza supper, {0}.', 'BMO Chop! If this were a real attack, {0}, you\'d be dead. But', 'I used the combo move, {0}!']
+        possibles = ['I have your back, {0}.', 'I am red hot like pizza supper, {0}.', 'BMO Chop! If this were a real attack, {0}, you\'d be dead. But', 'I used the combo move, {0}!']
         return random.choice(possibles).format(person)
 
     def parse_command_person(self):
