@@ -220,7 +220,7 @@ class RevisedCommandView(View):
 
         if action in ['build srcconlead schedule','build srccon:lead schedule']:
             try:
-                update_srccon_power_schedule()
+                update_srccon_lead_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
                 self.set_response('{0} I just sent the data from our schedule spreadsheet into http://schedule.lead.srccon.org/.'.format(affirmative))
             except:
