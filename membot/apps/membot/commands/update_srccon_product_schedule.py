@@ -10,7 +10,7 @@ from oauth2client.client import SignedJwtAssertionCredentials
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-lead',
+    'REPO_NAME': 'srccon-product',
     'TARGET_FILE': 'schedule/sessions.json',
     'TARGET_BRANCHES': ['staging','master',],# choose one or more branches
 }
@@ -18,7 +18,7 @@ GITHUB_CONFIG = {
 GITHUB_SRCCON_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-lead',
+    'REPO_NAME': 'srccon-product',
     'TARGET_FILE': '_data/schedule.yaml',
     'TARGET_BRANCHES': ['staging','master',],
 }
