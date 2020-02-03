@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1c5Mgx7qTpIhwtKZZE89QXxVwlsV3y0mTrRKHKOMMnd8'
+GOOGLE_SPREADSHEET_KEY = '1MQEvn-rL90no-weGT-QQx5kCCiGfBPGCB1XUZLfxy-g'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
@@ -203,7 +203,7 @@ def commit_json(data, target_config=GITHUB_CONFIG, commit=COMMIT_JSON_TO_GITHUB)
                     logger.info('Data updated, new commit to repo')
                 
 
-def update_srccon_lead_schedule():
+def update_srccon_product_schedule():
     data = fetch_data(multiple_sheets=FETCH_MULTIPLE_WORKSHEETS, worksheets_to_skip=WORKSHEETS_TO_SKIP)
     #print 'Fetched the data ...'
 
@@ -261,7 +261,7 @@ logger = logging.getLogger('schedule_loader')
 
 if __name__ == "__main__":
     try:
-        update_srccon_lead_schedule()
+        update_srccon_product_schedule()
     except Exception, e:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)

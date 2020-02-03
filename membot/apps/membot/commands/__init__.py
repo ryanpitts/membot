@@ -1,3 +1,3 @@
 from .update_proposals import update_proposals
 from .update_srccon_schedule import update_srccon_schedule
-from .update_srccon_lead_schedule import update_srccon_lead_schedule
+from .update_srccon_product_schedule import update_srccon_product_schedule
