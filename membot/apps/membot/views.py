@@ -18,7 +18,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['build srccon schedule', 'build srcconproduct schedule', 'build srccon:product schedule'],
+    'hey bmo': ['build srccon schedule', 'build srcconproduct schedule', 'build srccon:product schedule', 'update srccon proposals'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -222,7 +222,7 @@ class RevisedCommandView(View):
             try:
                 update_srccon_product_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from our schedule spreadsheet into http://product.srccon.org/schedule/.'.format(affirmative))
+                self.set_response('{0} I just sent the data from our schedule spreadsheet into https://product.srccon.org/schedule/.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
