@@ -10,7 +10,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from .commands import update_proposals, update_srccon_schedule, update_srccon_product_schedule
+from .commands import update_proposals, update_srccon_schedule, update_lender_display
 from .models import Memory
 
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
@@ -18,7 +18,7 @@ ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
     'membot': ['show',],
-    'hey bmo': ['build srccon schedule', 'build srcconproduct schedule', 'build srccon:product schedule', 'update srccon proposals'],
+    'hey bmo': ['build srccon schedule', 'update srccon proposals', 'update lender data', 'update lender display'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -218,11 +218,11 @@ class RevisedCommandView(View):
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
 
-        if action in ['build srcconproduct schedule','build srccon:product schedule']:
+        if action in ['update lender data', 'update lender display']:
             try:
-                update_srccon_product_schedule()
+                update_lender_display()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from our schedule spreadsheet into https://product.srccon.org/schedule/.'.format(affirmative))
+                self.set_response('{0} I just sent the data from the lender spreadsheet into https://opennews.github.io/2020-microloans-journalists/.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
