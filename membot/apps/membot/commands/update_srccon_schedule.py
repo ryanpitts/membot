@@ -10,15 +10,15 @@ from oauth2client.client import SignedJwtAssertionCredentials
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-schedule',
-    'TARGET_FILE': 'sessions.json',
-    'TARGET_BRANCHES': ['gh-pages',],# choose one or more branches
+    'REPO_NAME': 'srccon-2020',
+    'TARGET_FILE': 'schedule/sessions.json',
+    'TARGET_BRANCHES': ['master','staging',],# choose one or more branches
 }
 
 GITHUB_SRCCON_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon',
+    'REPO_NAME': 'srccon-2020',
     'TARGET_FILE': '_data/schedule.yaml',
     'TARGET_BRANCHES': ['master',],
 }
@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1DjpCP5jQia1O3dCwC2mv4hgzCBvUorSwmQmc7sjegPM'
+GOOGLE_SPREADSHEET_KEY = '19uwDxTQJ0iOVbeiq5EIBop1uGGGYJdrTntIwScW5bIA'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
@@ -213,7 +213,7 @@ def update_srccon_schedule():
     json_data = make_json(data, store_locally=MAKE_LOCAL_JSON)
     #print 'Made some JSON!'
 
-    commit_json(json_data, target_config=GITHUB_SRCCON_YAML_CONFIG)
+    #commit_json(json_data, target_config=GITHUB_SRCCON_YAML_CONFIG)
     #print 'SENT THE DATA TO GITHUB!'
 
     commit_json(json_data)
