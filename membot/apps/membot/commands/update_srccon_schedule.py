@@ -10,7 +10,7 @@ from oauth2client.client import SignedJwtAssertionCredentials
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-2020',
+    'REPO_NAME': 'srccon-2021',
     'TARGET_FILE': 'schedule/sessions.json',
     'TARGET_BRANCHES': ['master','staging',],# choose one or more branches
 }
@@ -18,7 +18,7 @@ GITHUB_CONFIG = {
 GITHUB_SRCCON_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-2020',
+    'REPO_NAME': 'srccon-2021',
     'TARGET_FILE': '_data/schedule.yaml',
     'TARGET_BRANCHES': ['master',],
 }
@@ -31,7 +31,7 @@ GOOGLE_API_CONFIG = {
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '19uwDxTQJ0iOVbeiq5EIBop1uGGGYJdrTntIwScW5bIA'
+GOOGLE_SPREADSHEET_KEY = '1oYob00DLW09BoYUt-ZvPza5xnwNiFVQkQbcg6Zn2VWE'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
