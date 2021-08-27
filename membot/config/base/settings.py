@@ -22,7 +22,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'membot.apps.membot',
-    #'membot.apps.projects',
     'corsheaders',
 )
 

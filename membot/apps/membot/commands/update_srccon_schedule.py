@@ -45,10 +45,10 @@ FETCH_MULTIPLE_WORKSHEETS = False
 WORKSHEETS_TO_SKIP = []
 
 # set to True to store local version of JSON
-MAKE_LOCAL_JSON = False
+MAKE_LOCAL_JSON = True
 
 # set to False for dry runs
-COMMIT_JSON_TO_GITHUB = True
+COMMIT_JSON_TO_GITHUB = False
 
 # TODO: Add method for storing JSON output in S3 bucket
 # S3_CONFIG = {}

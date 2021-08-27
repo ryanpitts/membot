@@ -37,10 +37,10 @@ SCREENDOOR_RESPONSE_MAP = {
 }
 
 # set to True to store local version of JSON
-MAKE_LOCAL_JSON = False
+MAKE_LOCAL_JSON = True
 
 # set to False for dry runs
-COMMIT_JSON_TO_GITHUB = True
+COMMIT_JSON_TO_GITHUB = False
 
 def fetch_from_screendoor():
     '''
@@ -212,7 +212,7 @@ def update_proposals():
     data = transform_data(data)
     #print 'Prepped the data ...'
 
-    data = sort_data(data)
+    data = sort_data(data, alpha=True)
     #print 'Sorted the data ...'    
 
     json_data = make_json(data, store_locally=MAKE_LOCAL_JSON, filename='proposals.json')

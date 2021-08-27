@@ -17,7 +17,6 @@ SLACK_TOKEN = os.environ['SLACK_TOKEN']
 ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
-    'membot': ['show',],
     'hey bmo': ['build srccon schedule', 'update srccon proposals', 'update lender data', 'update lender display'],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
