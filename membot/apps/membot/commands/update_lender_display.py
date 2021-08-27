@@ -5,7 +5,6 @@ import io
 import json
 import logging
 from logging.config import dictConfig
-from oauth2client.client import SignedJwtAssertionCredentials
 
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
@@ -17,7 +16,7 @@ GITHUB_CONFIG = {
 
 GOOGLE_API_CONFIG = {
     'CLIENT_EMAIL': os.environ['GOOGLE_API_CLIENT_EMAIL'],
-    'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'].decode('unicode_escape'),
+    'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'],
     'SCOPE': ['https://spreadsheets.google.com/feeds'],
 }
 
@@ -244,7 +243,7 @@ logger = logging.getLogger('schedule_loader')
 if __name__ == "__main__":
     try:
         update_data()
-    except Exception, e:
+    except Exception:
         sys.stderr.write('\n')
         traceback.print_exc(file=sys.stderr)
         sys.stderr.write('\n')
