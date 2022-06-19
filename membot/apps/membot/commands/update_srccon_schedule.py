@@ -10,28 +10,29 @@ from logging.config import dictConfig
 GITHUB_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-2021',
+    'REPO_NAME': 'srccon-2022',
     'TARGET_FILE': 'schedule/sessions.json',
-    'TARGET_BRANCHES': ['master','staging',],# choose one or more branches
+    'TARGET_BRANCHES': ['main','staging',],# choose one or more branches
 }
 
 GITHUB_SRCCON_YAML_CONFIG = {
     'TOKEN': os.environ['GITHUB_TOKEN'],
     'REPO_OWNER': 'opennews',
-    'REPO_NAME': 'srccon-2021',
+    'REPO_NAME': 'srccon-2022',
     'TARGET_FILE': '_data/schedule.yaml',
-    'TARGET_BRANCHES': ['master',],
+    'TARGET_BRANCHES': ['main',],
 }
 
-GOOGLE_API_CONFIG = {
-    'CLIENT_EMAIL': os.environ['GOOGLE_API_CLIENT_EMAIL'],
-    'PRIVATE_KEY': os.environ['GOOGLE_API_PRIVATE_KEY'],
-    'SCOPE': ['https://spreadsheets.google.com/feeds'],
+GOOGLE_API_CREDENTIALS = {
+    "type": "service_account",
+    "private_key": os.environ["GOOGLE_API_PRIVATE_KEY"].encode().decode('unicode_escape'),
+    "client_email": os.environ["GOOGLE_API_CLIENT_EMAIL"],
+    "token_uri": "https://oauth2.googleapis.com/token",
 }
 
 # the unique ID of the spreadsheet with your data can be stored
 # as an environment variable or simply added here as a string
-GOOGLE_SPREADSHEET_KEY = '1oYob00DLW09BoYUt-ZvPza5xnwNiFVQkQbcg6Zn2VWE'
+GOOGLE_SPREADSHEET_KEY = '1k8iPZAmWFU0fzSkdS6u1jWU-OwlxELIgKNRdGaIpRKQ'
 #GOOGLE_SPREADSHEET_KEY = os.environ['GOOGLE_SPREADSHEET_KEY']
 
 # pull data from a named worksheet, or leave blank to assume first worksheet
@@ -45,10 +46,10 @@ FETCH_MULTIPLE_WORKSHEETS = False
 WORKSHEETS_TO_SKIP = []
 
 # set to True to store local version of JSON
-MAKE_LOCAL_JSON = True
+MAKE_LOCAL_JSON = False
 
 # set to False for dry runs
-COMMIT_JSON_TO_GITHUB = False
+COMMIT_JSON_TO_GITHUB = True
 
 # TODO: Add method for storing JSON output in S3 bucket
 # S3_CONFIG = {}
@@ -58,10 +59,7 @@ def authenticate_with_google():
     '''
     Connect to Google Spreadsheet with gspread library.
     '''
-    credentials = SignedJwtAssertionCredentials(
-        GOOGLE_API_CONFIG['CLIENT_EMAIL'], GOOGLE_API_CONFIG['PRIVATE_KEY'], GOOGLE_API_CONFIG['SCOPE']
-    )
-    google_api_conn = gspread.authorize(credentials)
+    google_api_conn = gspread.service_account_from_dict(GOOGLE_API_CREDENTIALS)
     
     return google_api_conn
     
@@ -112,7 +110,7 @@ def transform_data(data):
     '''
     def _transform_response_item(item, skip=False):
         # make sure vars are strings
-        _transformed_item = {k: unicode(v) for k, v in item.iteritems() if k}
+        _transformed_item = {k: v for k, v in item.items() if k}
         
         # EXAMPLE: get rid of data from column `rowNumber`
         # if 'rowNumber' in _transformed_item:
@@ -136,8 +134,9 @@ def transform_data(data):
         return _transformed_item
     
     # pass spreadsheet rows through the transformer
-    transformed_data = filter(None, [_transform_response_item(item) for item in data])
-
+    transformed_data = [_transform_response_item(item) for item in data]
+    transformed_data = [item for item in transformed_data if item]
+    
     return transformed_data
 
 def make_json(data, store_locally=False, filename=GITHUB_CONFIG['TARGET_FILE']):
@@ -148,7 +147,7 @@ def make_json(data, store_locally=False, filename=GITHUB_CONFIG['TARGET_FILE']):
     
     if store_locally:
         with io.open(filename, 'w', encoding='utf8') as outfile:
-            outfile.write(unicode(json_out))
+            outfile.write(json_out)
 
     return json_out.encode('utf-8')
 
