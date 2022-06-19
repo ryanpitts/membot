@@ -16,7 +16,7 @@ SLACK_TOKEN = os.environ['SLACK_TOKEN']
 ALT_SLACK_TOKEN = os.environ['ALT_SLACK_TOKEN']
 INBOUND_SLACK_TOKEN = os.environ['INBOUND_SLACK_TOKEN']
 KNOWN_COMMANDS = {
-    'hey bmo': ['build srccon schedule', 'update srccon proposals', 'update lender data', 'update lender display'],
+    'hey bmo': ['build srccon schedule',],
 }
 BOT_NAMES = KNOWN_COMMANDS.keys()
 
@@ -87,29 +87,11 @@ class CommandView(View):
             self.set_response('Hmmm, I\'m not sure how to do that, {0}. Here\'s what I\'m authorized to do: {1}.{2}'.format(self.command['person'], (', ').join(KNOWN_COMMANDS[self.command['botname']]), suffix))
             return JsonResponse(self.response)
 
-        if action == 'update srccon proposals':
-            try:
-                update_proposals()
-                affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from Screendoor over to https://srccon.org/sessions/proposals/.'.format(affirmative))
-            except:
-                self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
-            return JsonResponse(self.response)
-
         if action == 'build srccon schedule':
             try:
                 update_srccon_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
                 self.set_response('{0} I just sent the data from our schedule spreadsheet into https://2021.srccon.org/schedule.'.format(affirmative))
-            except:
-                self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
-            return JsonResponse(self.response)
-
-        if action in ['update lender data', 'update lender display']:
-            try:
-                update_lender_display()
-                affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from the lender spreadsheet into https://opennews.github.io/2020-microloans-journalists/.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
