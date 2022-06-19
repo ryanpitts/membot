@@ -1,8 +1,8 @@
 from django.conf import settings
-from django.urls import re_path, include
+from django.urls import path, include
 
 urlpatterns = [
-    re_path(r'^membot/', include('membot.apps.membot.urls')),
+    path('membot/', include('membot.apps.membot.urls')),
 ]
 
 if settings.DEBUG:
