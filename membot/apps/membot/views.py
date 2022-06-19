@@ -51,7 +51,7 @@ class CommandView(View):
 
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
-        return super(RevisedCommandView, self).dispatch(*args, **kwargs)
+        return super(CommandView, self).dispatch(*args, **kwargs)
 
     def verify_auth_token(self):
         '''
