@@ -91,7 +91,7 @@ class CommandView(View):
             try:
                 update_srccon_schedule()
                 affirmative = self.random_affirmative(self.command['person'])
-                self.set_response('{0} I just sent the data from our schedule spreadsheet into https://2021.srccon.org/schedule.'.format(affirmative))
+                self.set_response('{0} I just sent the data from our schedule spreadsheet into https://2022.srccon.org/schedule.'.format(affirmative))
             except:
                 self.set_response('Oh no, something went wrong, {0}.'.format(self.command['person']))
             return JsonResponse(self.response)
