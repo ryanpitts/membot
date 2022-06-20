@@ -27,7 +27,7 @@ pyOpenSSL==17.5.0
 python-dateutil==2.7.2
 requests==2.20.0
 restless==2.0.1
-rsa==3.2
+rsa==4.7
 six==1.11.0
 static3==0.5.1
 uritemplate==3.0.0
