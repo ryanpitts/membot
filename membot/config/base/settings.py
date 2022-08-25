@@ -7,8 +7,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DEFAULT_SECRET_KEY = 'mj4%3@87asupersecretdefaultkey90sd_$f8907a)*'
 SECRET_KEY = os.environ.get('SECRET_KEY', DEFAULT_SECRET_KEY)
 
-DEBUG = True
-TEMPLATE_DEBUG = True
+DEBUG = False
+TEMPLATE_DEBUG = False
 ALLOWED_HOSTS = ['*'] #TODO: change this once we have a domain
 ROOT_URLCONF = 'membot.config.base.urls'
 WSGI_APPLICATION = 'membot.config.base.wsgi.application'
