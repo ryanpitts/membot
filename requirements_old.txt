@@ -32,4 +32,4 @@ six==1.11.0
 static3==0.5.1
 uritemplate==3.0.0
 uritemplate.py==0.3.0
-urllib3==1.24.2
+urllib3==1.26.5
